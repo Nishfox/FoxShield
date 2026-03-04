@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentineL Tracker - FoxShield</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* =========================================
+           CSS: DESIGN DARK MODE E LAYOUT MAPPA
+           ========================================= */
+        :root {
+            --bg-main: #0b1120;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #0ea5e9;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: var(--bg-main); color: var(--text-light); height: 100vh; display: flex; overflow: hidden; }
+
+        /* --- SIDEBAR LISTA TAG --- */
+        .sidebar { width: 350px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; box-shadow: 2px 0 15px rgba(0,0,0,0.5); }
+        
+        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); }
+        .sidebar-header h2 { font-size: 22px; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-bottom: 15px;}
+        
+        .btn-back { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 13px; width: 100%; text-align: center; display: block; text-decoration: none;}
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); background: rgba(14, 165, 233, 0.1); }
+
+        .tag-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* Stile delle Card dei Tag SentineL */
+        .tag-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; overflow: hidden; }
+        .tag-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        
+        .tag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .tag-title { font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .tag-icon { font-size: 20px; }
+        
+        .tag-status { font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .status-online { color: var(--accent-green); }
+        .status-offline { color: var(--accent-red); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot.online { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); animation: pulse 2s infinite; }
+        .dot.offline { background-color: var(--accent-red); }
+
+        .tag-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 15px; font-family: monospace; }
+        
+        .btn-track { background-color: #334155; color: white; border: none; padding: 8px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: bold; transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .tag-card:hover .btn-track { background-color: var(--primary); }
+
+        /* --- AREA MAPPA --- */
+        .map-area { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; background-color: #0b1120; } /* Fallback color */
+
+        /* Overlay Crittografico Mappa */
+        #crypto-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 17, 32, 0.85); z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; color: var(--accent-green); font-family: monospace; backdrop-filter: blur(4px); }
+        .radar-spinner { border: 2px solid rgba(16, 185, 129, 0.2); border-top: 2px solid var(--accent-green); border-radius: 50%; width: 80px; height: 80px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        
+        .log-line { margin: 5px 0; font-size: 14px; text-shadow: 0 0 5px var(--accent-green); opacity: 0; transform: translateY(10px); animation: fadeInUp 0.3s forwards; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Personalizzazione Marker Leaflet per il tema Dark */
+        .custom-marker { background-color: var(--primary); border: 2px solid white; border-radius: 50%; box-shadow: 0 0 15px var(--primary); width: 15px !important; height: 15px !important; }
+        .marker-pulse { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: rgba(14, 165, 233, 0.4); border-radius: 50%; animation: pulse 2s infinite; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>📡 SentineL</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Rete Tracking Criptata P2P</p>
+            <a href="../index.html" class="btn-back">🔙 Torna allo Store Hub</a>
+        </div>
+        
+        <div class="tag-list">
+            <div class="tag-card" onclick="tracciaDispositivo('Auto - Alfa Romeo', 45.4642, 9.1900, 'TAG-88A2-FX')">
+                <div class="tag-header">
+                    <span class="tag-title"><span class="tag-icon">🚗</span> Auto Principale</span>
+                    <span class="tag-status status-online"><span class="dot online"></span> Attivo</span>
+                </div>
+                <div class="tag-meta">
+                    <span>ID: TAG-88A2-FX</span>
+                    <span>🔋 85%</span>
+                </div>
+                <button class="btn-track">🎯 Localizza</button>
+            </div>
+
+            <div class="tag-card" onclick="tracciaDispositivo('Zaino Lavoro', 45.4773, 9.1815, 'TAG-41B9-XZ')">
+                <div class="tag-header">
+                    <span class="tag-title"><span class="tag-icon">🎒</span> Zaino Lavoro</span>
+                    <span class="tag-status status-online"><span class="dot online"></span> Attivo</span>
+                </div>
+                <div class="tag-meta">
+                    <span>ID: TAG-41B9-XZ</span>
+                    <span>🔋 42%</span>
+                </div>
+                <button class="btn-track">🎯 Localizza</button>
+            </div>
+
+            <div class="tag-card" style="opacity: 0.6;">
+                <div class="tag-header">
+                    <span class="tag-title"><span class="tag-icon">🔑</span> Chiavi Casa</span>
+                    <span class="tag-status status-offline"><span class="dot offline"></span> Offline</span>
+                </div>
+                <div class="tag-meta">
+                    <span>ID: TAG-00X1-ZZ</span>
+                    <span>🔋 0% (Spento)</span>
+                </div>
+                <button class="btn-track" style="background: #334155; cursor: not-allowed;" disabled>Segnale Perso</button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="map-area">
+        <div id="crypto-overlay">
+            <div class="radar-spinner"></div>
+            <div id="terminal-logs"></div>
+        </div>
+        <div id="map"></div>
+    </main>
+
+    <script>
+        // 1. Inizializzazione Mappa (Puntata sull'Italia)
+        let map = L.map('map', { zoomControl: false }).setView([41.9028, 12.4964], 5); // Coordinate Italia default
+        let markerCorrente = null;
+
+        // Aggiungiamo i controlli zoom in basso a destra
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Aggiungiamo il layer "Dark Matter" di CartoDB (Perfetto per il look Cyber/Privacy)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; SentineL Encrypted Network | OpenStreetMap',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // 2. Funzione per tracciare il dispositivo con animazione "Hacker"
+        function tracciaDispositivo(nome, lat, lng, idTag) {
+            const overlay = document.getElementById('crypto-overlay');
+            const terminal = document.getElementById('terminal-logs');
+            
+            // Mostra l'overlay
+            overlay.style.display = 'flex';
+            terminal.innerHTML = ''; // Pulisci i log precedenti
+
+            const logs = [
+                `> Inizializzazione protocollo di ricerca per [${nome}]...`,
+                `> Intercettazione segnale P2P dal nodo ${idTag}...`,
+                `> Segnale agganciato. Coordinate attualmente criptate.`,
+                `> Applicazione chiave privata FoxShield in corso...`,
+                `> Decrittazione AES-256 completata.`,
+                `> Estrazione coordinate geografiche...`
+            ];
+
+            let delay = 0;
+
+            // Simula il terminale che stampa le righe
+            logs.forEach((testo, index) => {
+                setTimeout(() => {
+                    const riga = document.createElement('div');
+                    riga.className = 'log-line';
+                    riga.innerText = testo;
+                    terminal.appendChild(riga);
+                }, delay);
+                delay += 600; // 0.6 secondi per riga
+            });
+
+            // Dopo aver stampato i log, rimuovi l'overlay e centra la mappa
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                centraMappaESegna(nome, lat, lng);
+            }, delay + 500);
+        }
+
+        // 3. Funzione per piazzare il marker sulla mappa
+        function centraMappaESegna(nome, lat, lng) {
+            // Rimuovi il marker precedente se esiste
+            if (markerCorrente) {
+                map.removeLayer(markerCorrente);
+            }
+
+            // Animazione "volo" verso le coordinate (Zoom a livello 16)
+            map.flyTo([lat, lng], 16, {
+                animate: true,
+                duration: 2 // Secondi di volo
+            });
+
+            // Icona customizzata (Punto blu pulsante)
+            const customIcon = L.divIcon({
+                className: '',
+                html: `<div class="marker-pulse"></div><div class="custom-marker"></div>`,
+                iconSize: [15, 15],
+                iconAnchor: [7.5, 7.5]
+            });
+
+            // Aspetta che finisca il "volo" prima di far apparire il marker
+            setTimeout(() => {
+                markerCorrente = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+                
+                // Popup scuro personalizzato
+                markerCorrente.bindPopup(`
+                    <div style="background: #1e293b; color: white; padding: 5px; border-radius: 5px; border: 1px solid #0ea5e9; font-family: monospace;">
+                        <strong style="color: #0ea5e9;">${nome}</strong><br>
+                        Lat: ${lat}<br>
+                        Lng: ${lng}<br>
+                        <span style="color: #10b981; font-size: 10px;">Segnale Decriptato</span>
+                    </div>
+                `).openPopup();
+                
+                // Fix per il CSS di default di Leaflet per i popup
+                document.querySelector('.leaflet-popup-content-wrapper').style.background = 'transparent';
+                document.querySelector('.leaflet-popup-content-wrapper').style.boxShadow = 'none';
+                document.querySelector('.leaflet-popup-tip').style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

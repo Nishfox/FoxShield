@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>MetaStripper | FoxShield</title>
+    <style>
+        :root { --bg: #020617; --neon-green: #10b981; --border: #1e293b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
+        body { background: var(--bg); color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+        
+        .back-link { position: absolute; top: 20px; left: 20px; color: #64748b; text-decoration: none; border: 1px solid #333; padding: 10px; }
+        
+        .header img { height: 90px; filter: drop-shadow(0 0 15px var(--neon-green)); margin-bottom: 20px; }
+        
+        .strip-container { width: 100%; max-width: 800px; background: #0f172a; border: 1px solid var(--border); padding: 40px; text-align: center; }
+        
+        .drop-zone { border: 2px dashed var(--neon-green); padding: 60px; margin-bottom: 30px; cursor: pointer; transition: 0.3s; }
+        .drop-zone:hover { background: rgba(16, 185, 129, 0.1); }
+        
+        .status-box { background: #000; color: var(--neon-green); padding: 20px; text-align: left; font-size: 13px; display: none; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">🔙 TORNA_AL_NUCLEO</a>
+    
+    <div class="header">
+        <img src="../image/foxshield-logo.jpg" alt="NF Logo">
+        <h1 style="letter-spacing: 5px; color: var(--neon-green);">META_STRIPPER_v4</h1>
+    </div>
+
+    <div class="strip-container">
+        <div class="drop-zone" onclick="purge()">
+            <span style="font-size: 50px;">🖼️</span>
+            <p style="margin-top: 15px;">TRASCINA IMMAGINE DA BONIFICARE</p>
+        </div>
+        
+        <div id="status" class="status-box">
+            > SCANSIONE METADATI...<br>
+            > RILEVATE COORDINATE GPS: [REDACTED]<br>
+            > RILEVATO SERIALE CAMERA: [REDACTED]<br>
+            > <span style="color:white; background:var(--neon-green); color:black">PULIZIA COMPLETATA: FILE 100% GHOST.</span>
+        </div>
+    </div>
+
+    <script>
+        function purge() {
+            document.getElementById('status').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

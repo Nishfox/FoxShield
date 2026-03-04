@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>FoxMask AI | FoxShield</title>
+    <style>
+        :root { --bg: #020617; --neon-blue: #0ea5e9; --border: #1e293b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
+        body { background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        
+        .back-link { position: absolute; top: 20px; left: 20px; color: #64748b; text-decoration: none; border: 1px solid #333; padding: 10px; }
+        
+        .main-frame { width: 900px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; backdrop-filter: blur(10px); }
+        
+        .upload-box { border: 2px dashed var(--neon-blue); height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; }
+        .upload-box:hover { background: rgba(14, 165, 233, 0.1); }
+
+        .ai-terminal { background: #000; padding: 20px; height: 300px; color: var(--neon-blue); font-size: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .logo-center { text-align: center; margin-bottom: 20px; grid-column: span 2; }
+        .logo-center img { height: 70px; filter: drop-shadow(0 0 10px var(--neon-blue)); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">🔙 HUB_PRINCIPALE</a>
+
+    <div class="main-frame">
+        <div class="logo-center">
+            <img src="../image/foxshield-logo2.jpg" alt="NF Logo">
+        </div>
+        
+        <div class="upload-box" onclick="simulateAI()">
+            <span style="font-size: 40px;">🎬</span>
+            <p style="margin-top: 10px;">CARICA VIDEO TARGET</p>
+        </div>
+
+        <div class="ai-terminal" id="term">
+            > AI_KERNEL_READY...<br>
+            > IN ATTESA DI STREAM VIDEO...
+        </div>
+    </div>
+
+    <script>
+        function simulateAI() {
+            const t = document.getElementById('term');
+            t.innerHTML += "<br>> ANALISI FRAME IN CORSO...";
+            setTimeout(() => {
+                t.innerHTML += "<br>> RILEVATI: 3 VOLTI";
+                t.innerHTML += "<br>> APPLICAZIONE MASCHERA NF_SHIELD...";
+                t.innerHTML += "<br><span style='color:#10b981'>> ANONIMIZZAZIONE COMPLETATA.</span>";
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

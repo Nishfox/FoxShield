@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaultBlock | FoxShield Zero-Knowledge</title>
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --neon-orange: #f59e0b;
+            --neon-blue: #0ea5e9;
+            --card-bg: rgba(15, 23, 42, 0.9);
+            --border: #1e293b;
+            --text-dim: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* BACKGROUND ANIMATION - DIGITAL RAIN */
+        #canvas-vault {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.15;
+        }
+
+        .container {
+            width: 800px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.1);
+            position: relative;
+        }
+
+        /* OLOGRAPHIC LOCK */
+        .lock-container {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .holo-lock {
+            font-size: 60px;
+            color: var(--neon-orange);
+            text-shadow: 0 0 20px var(--neon-orange);
+            animation: holoPulse 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes holoPulse {
+            0% { transform: scale(1); opacity: 0.7; filter: blur(1px); }
+            50% { transform: scale(1.05); opacity: 1; filter: blur(0px); }
+            100% { transform: scale(1); opacity: 0.7; filter: blur(1px); }
+        }
+
+        .lock-status {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            margin-top: 10px;
+        }
+
+        /* VAULT EDITOR */
+        #vault-note {
+            width: 100%;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--border);
+            color: #10b981;
+            padding: 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            resize: none;
+            transition: 0.3s;
+        }
+
+        #vault-note:focus { border-color: var(--neon-orange); }
+
+        /* CONTROLS */
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-key {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            outline: none;
+            transition: 0.3s;
+            width: 250px;
+        }
+
+        .input-key:focus { border-color: var(--neon-orange); }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--neon-orange);
+            color: var(--neon-orange);
+            padding: 12px 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-action:hover {
+            background: var(--neon-orange);
+            color: black;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        /* GLITCH ENCRYPTION EFFECT */
+        .encrypting {
+            animation: glitchText 0.1s infinite;
+        }
+
+        @keyframes glitchText {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { transform: translate(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-vault"></canvas>
+
+    <div class="container">
+        <div class="lock-container">
+            <span class="holo-lock" id="main-lock">🔑</span>
+            <div class="lock-status">VAULT-STATUS: STANDBY</div>
+        </div>
+
+        <h1 style="color: var(--neon-orange); text-align: center; margin-bottom: 5px;">VAULT-BLOCK z2.1</h1>
+        <p style="color: var(--text-dim); font-size: 11px; text-align: center; margin-bottom: 25px;">ZERO-KNOWLEDGE LOCAL ENCRYPTION TERMINAL // FOXSHIELD</p>
+
+        <textarea id="vault-note" placeholder="INSERISCI DATI SENSIBILI..."></textarea>
+
+        <div class="controls">
+            <input type="password" id="master-key" class="input-key" placeholder="MASTER KEY">
+            <button class="btn-action" onclick="simulateEncryption()">CRIPTA</button>
+        </div>
+    </div>
+
+    <script>
+        // BACKGROUND ANIMATION LOGIC (DIGITAL RAIN)
+        const canvas = document.getElementById('canvas-vault');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const columns = Math.floor(canvas.width / 20);
+        const drops = Array(columns).fill(0);
+        const chars = "01$🔒🔑-!@#%^&*";
+
+        function drawRain() {
+            ctx.fillStyle = "rgba(2, 6, 23, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#f59e0b2a";
+            ctx.font = "15px monospace";
+            drops.forEach((d, i) => {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * 20, d);
+                if (d > canvas.height) drops[i] = -20;
+                else drops[i] += 15;
+            });
+            requestAnimationFrame(drawRain);
+        }
+        drawRain();
+
+        // ENCRYPTION SIMULATION LOGIC
+        function simulateEncryption() {
+            const key = document.getElementById('master-key').value;
+            if(!key) return alert("INSERISCI MASTER KEY");
+            
+            const textArea = document.getElementById('vault-note');
+            const text = textArea.value;
+            const lock = document.getElementById('main-lock');
+            const status = document.querySelector('.lock-status');
+            
+            // Start simulation
+            lock.innerHTML = "🔒";
+            status.innerText = "VAULT-STATUS: ENCRYPTING AES-256...";
+            textArea.classList.add('encrypting');
+            textArea.disabled = true;
+
+            // Simula l'algoritmo di cifratura graduale
+            const encryptedText = btoa(text).split('').reverse().join('');
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+            let iteration = 0;
+            const maxIterations = 20;
+
+            const interval = setInterval(() => {
+                textArea.value = text.split('').map((char, index) => {
+                    if (index < (iteration / maxIterations) * text.length) {
+                        return encryptedText[index];
+                    }
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('');
+                
+                iteration++;
+                if(iteration >= maxIterations) {
+                    clearInterval(interval);
+                    textArea.value = encryptedText; // Risultato finale
+                    textArea.classList.remove('encrypting');
+                    textArea.disabled = false;
+                    textArea.style.color = '#ef4444'; // Cambia colore a "sicuro/criptato"
+                    status.innerText = "VAULT-STATUS: SECURE // ZERO ACCESS";
+                    alert("DATI CRIPTATI LOCALMENTE. NESSUNA CHIAVE È STATA INVIATA AL SERVER.");
+                }
+            }, 50); // Velocità del glitch
+        }
+    </script>
+</body>
+</html>

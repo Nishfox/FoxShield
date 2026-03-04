@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxTunnel P2P | FoxShield Protocol</title>
+    <style>
+        /* =========================================
+           CSS: DESIGN DARK MODE & FOXTUNNEL v2.0
+           ========================================= */
+        :root {
+            --bg-main: #020617;
+            --bg-card: #0f172a;
+            --primary: #0ea5e9;
+            --primary-orange: #f59e0b;
+            --accent-green: #10b981;
+            --text-light: #f8fafc;
+            --text-muted: #64748b;
+            --border: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: var(--bg-main); color: var(--text-light); height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+
+        /* Background Animation */
+        #tunnel-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.15; pointer-events: none; }
+
+        /* Header */
+        header { 
+            width: 100%; padding: 15px 40px; border-bottom: 2px solid var(--primary); 
+            display: flex; justify-content: space-between; align-items: center; 
+            background-color: rgba(11, 17, 32, 0.9); backdrop-filter: blur(10px); z-index: 10;
+        }
+        .logo-nav img { height: 45px; filter: drop-shadow(0 0 5px var(--primary)); }
+        .btn-back { 
+            background: transparent; border: 1px solid var(--border); color: var(--text-light); 
+            padding: 8px 20px; border-radius: 4px; text-decoration: none; font-size: 13px; 
+            font-weight: bold; transition: 0.3s; 
+        }
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* Contenitore Principale */
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 800px; padding: 20px; z-index: 5; }
+
+        .tunnel-info { text-align: center; margin-bottom: 30px; }
+        .tunnel-info img { height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--primary-orange)); animation: pulseLogo 2s infinite; }
+        @keyframes pulseLogo { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+        
+        .tunnel-info h2 { font-size: 32px; color: var(--primary-orange); letter-spacing: 2px; }
+        .tunnel-info p { color: var(--text-muted); font-size: 14px; margin-top: 5px; font-family: monospace; }
+
+        /* Zona Drag & Drop */
+        .drop-zone { 
+            width: 100%; height: 250px; background-color: var(--bg-card); 
+            border: 2px dashed var(--border); border-radius: 4px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; 
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--primary-orange); background-color: rgba(245, 158, 11, 0.05); }
+        
+        .drop-zone i { font-size: 40px; margin-bottom: 15px; }
+        .drop-zone p { font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .drop-zone span { font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: monospace; }
+        
+        #file-input { display: none; }
+
+        /* Terminale */
+        .terminal-box { 
+            width: 100%; background-color: #000; border: 1px solid var(--border); 
+            padding: 20px; margin-top: 30px; display: none; 
+            font-family: 'Courier New', monospace; position: relative; 
+        }
+        .terminal-header { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-size: 11px; color: var(--text-muted); }
+        
+        .log-container { height: 120px; overflow-y: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+        .log-line { color: var(--accent-green); font-size: 13px; margin: 3px 0; }
+        .log-line.warning { color: var(--primary-orange); }
+
+        /* Progress Bar */
+        .progress-wrapper { width: 100%; height: 4px; background-color: #1e293b; margin-top: 20px; overflow: hidden; display: none; }
+        .progress-bar { height: 100%; width: 0%; background: var(--primary-orange); box-shadow: 0 0 10px var(--primary-orange); transition: width 0.1s linear; }
+
+        /* Risultato */
+        .result-box { 
+            width: 100%; background-color: rgba(16, 185, 129, 0.05); 
+            border: 1px solid var(--accent-green); padding: 25px; 
+            margin-top: 20px; text-align: center; display: none; 
+        }
+        .link-container { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 15px; }
+        .link-input { background: #000; border: 1px solid var(--border); color: var(--text-light); padding: 12px; width: 70%; font-family: monospace; font-size: 12px; outline: none; }
+        .btn-copy { background-color: var(--accent-green); color: #000; border: none; padding: 12px 20px; font-weight: bold; cursor: pointer; transition: 0.3s; clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); }
+    </style>
+</head>
+<body>
+
+    <canvas id="tunnel-canvas"></canvas>
+
+    <header>
+        <div class="logo-nav">
+            <img src="../image/foxshield-logo2.jpg" alt="NF Logo">
+        </div>
+        <a href="../index.html" class="btn-back">🔙 TORNA ALL'HUB</a>
+    </header>
+
+    <main>
+        <div class="tunnel-info">
+            <img src="../image/foxshield-logo.jpg" alt="NF Icon">
+            <h2>FOXTUNNEL_P2P</h2>
+            <p>SCAVO PROTOCOLLO TRASFERIMENTO DIRETTO</p>
+        </div>
+
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <i>🦊🚇</i>
+            <p>Inserisci file nel tunnel</p>
+            <span>DRAG & DROP SECURE CHANNEL</span>
+            <input type="file" id="file-input" onchange="gestisciFile(this.files)">
+        </div>
+
+        <div class="terminal-box" id="terminal">
+            <div class="terminal-header">
+                <span>TUNNEL_DAEMON_v2.1</span>
+                <span>STATUS: ENCRYPTING...</span>
+            </div>
+            <div class="log-container" id="log-container"></div>
+            <div class="progress-wrapper" id="progress-wrapper">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="result-box" id="result-box">
+            <h3 style="color: var(--accent-green); letter-spacing: 2px;">✅ TUNNEL_STABILITO</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">Invia questo Hash al destinatario per il recupero diretto.</p>
+            <div class="link-container">
+                <input type="text" class="link-input" id="secure-link" readonly value="">
+                <button class="btn-copy" onclick="copiaLink()">COPIA_HASH</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- SFONDO ANIMATO ---
+        const canvas = document.getElementById('tunnel-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+        function drawTunnel() {
+            ctx.fillStyle = "rgba(2, 6, 23, 0.1)";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#0ea5e922";
+            for(let i=0; i<10; i++) {
+                ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, Math.random()*canvas.height, 0, Math.PI*2); ctx.stroke();
+            }
+            requestAnimationFrame(drawTunnel);
+        }
+        drawTunnel();
+
+        // --- LOGICA FILE ---
+        function gestisciFile(files) {
+            const file = files[0];
+            if (!file) return;
+
+            document.getElementById('drop-zone').style.display = 'none';
+            document.getElementById('terminal').style.display = 'block';
+            
+            const logs = [
+                `[SYS] FILE_DETECTED: ${file.name}`,
+                `[CRYPTO] GENERAZIONE CHIAVE AES-GCM-256...`,
+                `[TUNNEL] RICHIESTA NODO P2P WEBRTC...`,
+                `[TUNNEL] SCAVO IN CORSO...`
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                line.innerText = `> ${logs[i]}`;
+                document.getElementById('log-content'); // Fix per log container
+                document.getElementById('log-container').appendChild(line);
+                i++;
+                if(i == logs.length) {
+                    clearInterval(interval);
+                    document.getElementById('progress-wrapper').style.display = 'block';
+                    simulaProgresso();
+                }
+            }, 700);
+        }
+
+        function simulaProgresso() {
+            let width = 0;
+            const pb = document.getElementById('progress-bar');
+            const interval = setInterval(() => {
+                width += Math.random() * 8;
+                if (width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('result-box').style.display = 'block';
+                        document.getElementById('secure-link').value = "FT-" + Math.random().toString(36).substr(2, 12).toUpperCase();
+                    }, 500);
+                }
+                pb.style.width = width + '%';
+            }, 100);
+        }
+
+        function copiaLink() {
+            const el = document.getElementById('secure-link');
+            el.select();
+            document.execCommand('copy');
+            alert("HASH COPIATO NEGLI APPUNTI SICURI.");
+        }
+    </script>
+</body>
+</html>

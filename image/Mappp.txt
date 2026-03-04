@@ -1,0 +1,10 @@
+/FoxShield
+ ├── index.html         (La Home dello Store, dove ci sono tutte le app)
+ ├── css/
+ │   └── style.css      (Qui metteremo tutti i colori scuri, i bottoni e il design moderno)
+ ├── js/
+ │   └── app.js         (Il motore front-end per far funzionare i click e le animazioni)
+ └── apps/              (Qui dentro andranno le singole web app)
+     ├── orbisgard.html (L'interfaccia della chat criptata)
+     ├── tagsowner.html (La dashboard gestionale di Senti per tracciare i tag)
+     └── filedrop.html  (L'interfaccia per lo scambio file P2P)

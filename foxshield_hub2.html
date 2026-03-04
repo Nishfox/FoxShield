@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NF FOXSHIELD | Cyber-Core Tactical Hub</title>
+    <style>
+        :root {
+            --bg-deep: #01040a;
+            --neon-blue: #0ea5e9;
+            --neon-red: #ef4444;
+            --neon-purple: #a855f7;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-deep);
+            /* Sfondo immersivo con il cuore cibernetico */
+            background-image: 
+                linear-gradient(rgba(1, 4, 10, 0.75), rgba(1, 4, 10, 0.85)), 
+                url('image/cyber-core.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 100;
+        }
+
+        .header-logo img {
+            height: 50px;
+            filter: drop-shadow(0 0 10px var(--neon-blue));
+        }
+
+        .system-status {
+            text-align: right;
+            font-size: 11px;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+        }
+
+        /* --- TACTICAL INTERFACE --- */
+        .tactical-hub {
+            position: relative;
+            width: 1200px;
+            height: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- CENTRAL HEART CORE --- */
+        .core-heart {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .shield-img {
+            width: 280px;
+            filter: drop-shadow(0 0 30px var(--neon-red)) contrast(1.1);
+            animation: corePulse 4s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes corePulse {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--neon-red)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 50px var(--neon-red)) brightness(1.3); transform: scale(1.02); }
+        }
+
+        .core-label {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--neon-red);
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-red);
+        }
+
+        /* --- APP NODES --- */
+        .app-nodes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .node {
+            position: absolute;
+            width: 220px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .node:hover { transform: scale(1.15); filter: brightness(1.3); }
+
+        .node-icon {
+            width: 55px; height: 55px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(1, 4, 16, 0.95);
+            box-shadow: 0 0 15px var(--neon-blue);
+            font-size: 24px;
+            position: relative;
+        }
+
+        .node-info h4 { font-size: 14px; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; }
+        .node-info p { font-size: 10px; color: var(--text-muted); white-space: nowrap; font-family: sans-serif; }
+
+        /* --- CONNETTORI ELETTRICI --- */
+        .node::before {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-red), var(--neon-blue), transparent);
+            width: 160px;
+            z-index: -1;
+            box-shadow: 0 0 15px var(--neon-red);
+            animation: electricFlow 4s infinite linear;
+        }
+
+        @keyframes electricFlow {
+            0%, 100% { opacity: 0.3; transform: scaleX(0.8); }
+            50% { opacity: 1; transform: scaleX(1.1); }
+        }
+
+        /* --- POSIZIONAMENTO 10 NODI --- */
+        /* Sinistra (Core) */
+        .n1 { top: 10%; left: 5%; } .n1::before { left: 40px; transform-origin: left; }
+        .n2 { top: 30%; left: 0%; } .n2::before { left: 40px; transform-origin: left; }
+        .n3 { top: 50%; left: -3%; } .n3::before { left: 40px; transform-origin: left; }
+        .n4 { top: 70%; left: 0%; } .n4::before { left: 40px; transform-origin: left; }
+        .n5 { top: 90%; left: 5%; } .n5::before { left: 40px; transform-origin: left; }
+
+        /* Destra (Investigative) */
+        .n6 { top: 10%; right: 5%; flex-direction: row-reverse; text-align: right; } 
+        .n6::before { right: 40px; transform-origin: right; background: linear-gradient(-90deg, transparent, var(--neon-red), var(--neon-blue), transparent); }
+        
+        .n7 { top: 30%; right: 0%; flex-direction: row-reverse; text-align: right; } 
+        .n7::before { right: 40px; transform-origin: right; background: linear-gradient(-90deg, transparent, var(--neon-red), var(--neon-blue), transparent); }
+
+        .n8 { top: 50%; right: -3%; flex-direction: row-reverse; text-align: right; } 
+        .n8::before { right: 40px; transform-origin: right; background: linear-gradient(-90deg, transparent, var(--neon-red), var(--neon-blue), transparent); }
+
+        .n9 { top: 70%; right: 0%; flex-direction: row-reverse; text-align: right; } 
+        .n10 { top: 90%; right: 5%; flex-direction: row-reverse; text-align: right; } 
+        .n9::before, .n10::before { right: 40px; transform-origin: right; background: linear-gradient(-90deg, transparent, var(--neon-red), var(--neon-blue), transparent); }
+
+        /* --- FOOTER --- */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-logo">
+            <img src="image/foxshield-logo2.jpg" alt="NF FoxShield">
+        </div>
+        <div class="system-status">
+            STATUS: [SECURE]<br>
+            COGNITIVE_CORE: ONLINE
+        </div>
+    </header>
+
+    <div class="tactical-hub">
+        <!-- CUORE BIO-MECCANICO -->
+        <div class="core-heart">
+            <img src="image/foxshield-logo.jpg" class="shield-img" alt="NF Shield Core">
+            <div class="core-label">CENTRAL_CORE_PULSE</div>
+        </div>
+        
+        <div class="app-nodes">
+            <!-- Colonna Sinistra -->
+            <div class="node n1" onclick="window.location.href='apps/ciphernode.html'">
+                <div class="node-icon">💬</div>
+                <div class="node-info"><h4>CipherNode</h4><p>P2P Messenger</p></div>
+            </div>
+            <div class="node n2" onclick="window.location.href='apps/sentinel.html'">
+                <div class="node-icon">📡</div>
+                <div class="node-info"><h4>SentineL</h4><p>Asset Tracker</p></div>
+            </div>
+            <div class="node n3" onclick="window.location.href='apps/foxtunnel.html'">
+                <div class="node-icon">🚇</div>
+                <div class="node-info"><h4>FoxTunnel</h4><p>Secure Drop</p></div>
+            </div>
+            <div class="node n4" onclick="window.location.href='apps/ghostmail.html'">
+                <div class="node-icon">👻</div>
+                <div class="node-info"><h4>GhostMail</h4><p>Mail Alias</p></div>
+            </div>
+            <div class="node n5" onclick="window.location.href='apps/chronos.html'">
+                <div class="node-icon">🕰️</div>
+                <div class="node-info"><h4>Chronos</h4><p>History Recovery</p></div>
+            </div>
+
+            <!-- Colonna Destra -->
+            <div class="node n6" onclick="window.location.href='apps/spiderweb.html'">
+                <div class="node-icon">🕸️</div>
+                <div class="node-info"><h4>SpiderWeb</h4><p>Mesh Mapping</p></div>
+            </div>
+            <div class="node n7" onclick="window.location.href='apps/echolink.html'">
+                <div class="node-icon">🔊</div>
+                <div class="node-info"><h4>EchoLink</h4><p>Audio Forensic</p></div>
+            </div>
+            <div class="node n8" onclick="window.location.href='apps/foxmask.html'">
+                <div class="node-icon">🎭</div>
+                <div class="node-info"><h4>FoxMask</h4><p>AI Anonymizer</p></div>
+            </div>
+            <div class="node n9" onclick="window.location.href='apps/metastripper.html'">
+                <div class="node-icon">🧹</div>
+                <div class="node-info"><h4>Stripper</h4><p>Exif Sanitizer</p></div>
+            </div>
+            <div class="node n10" onclick="window.location.href='apps/vaultblock.html'">
+                <div class="node-icon" style="border-color: var(--neon-red); box-shadow: 0 0 20px var(--neon-red);">🔐</div>
+                <div class="node-info"><h4>VaultBlock</h4><p>Secure Caveau</p></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        NF FOXSHIELD PROTOCOL © 2026 // MILAN INVESTIGATIVE DEPT.
+    </footer>
+
+</body>
+</html>

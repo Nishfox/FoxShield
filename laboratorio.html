@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Laboratorio - FoxShield Innovation</title>
+    <style>
+        :root {
+            --bg-main: #020617;
+            --bg-card: #0f172a;
+            --primary: #0ea5e9;
+            --primary-orange: #f59e0b;
+            --accent-green: #10b981;
+            --text-light: #f8fafc;
+            --text-muted: #64748b;
+            --border: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body { background-color: var(--bg-main); color: var(--text-light); min-height: 100vh; overflow-x: hidden; }
+
+        /* NAVBAR */
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 40px;
+            background-color: rgba(11, 17, 32, 0.95); border-bottom: 2px solid var(--primary-orange);
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+        }
+
+        .logo-nav img { height: 50px; filter: drop-shadow(0 0 5px var(--primary-orange)); }
+
+        .btn-back { 
+            background: transparent; border: 1px solid var(--border); color: var(--text-light); 
+            padding: 8px 20px; border-radius: 4px; text-decoration: none; font-size: 13px; 
+            font-weight: bold; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+
+        /* LAYOUT */
+        main { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+
+        /* FORM SEZIONE */
+        .proposal-box { 
+            background: var(--bg-card); padding: 30px; border: 1px solid var(--border); 
+            border-top: 4px solid var(--primary-orange); position: sticky; top: 100px; height: fit-content;
+        }
+        
+        .proposal-box h2 { color: var(--primary-orange); margin-bottom: 15px; letter-spacing: 2px; }
+        .proposal-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; margin-bottom: 8px; color: var(--primary-orange); font-weight: bold; }
+        .input-group input, .input-group textarea { 
+            width: 100%; background: #000; border: 1px solid var(--border); color: white; 
+            padding: 12px; outline: none; transition: 0.3s; font-family: monospace;
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--primary-orange); }
+
+        .btn-transmit { 
+            width: 100%; background: var(--primary-orange); color: black; border: none; 
+            padding: 15px; font-weight: 900; cursor: pointer; text-transform: uppercase; 
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+        }
+
+        /* BACHECA IDEE */
+        .board-title { font-size: 28px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
+        .board-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .idea-card { 
+            background: var(--bg-card); border: 1px solid var(--border); padding: 25px; 
+            margin-bottom: 20px; display: flex; gap: 20px; transition: 0.3s;
+        }
+        .idea-card:hover { border-color: var(--primary); transform: translateX(10px); }
+
+        .vote-panel { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-width: 70px; background: #000; border: 1px solid var(--border); border-radius: 4px;
+        }
+        .vote-btn { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; }
+        .vote-btn:hover { color: var(--primary-orange); transform: translateY(-3px); }
+        .vote-btn.active { color: var(--primary-orange); }
+
+        .badge { font-size: 10px; padding: 4px 10px; border-radius: 2px; font-weight: bold; text-transform: uppercase; border: 1px solid; }
+        .badge-dev { color: var(--primary); border-color: var(--primary); background: rgba(14, 165, 233, 0.1); }
+        .badge-eval { color: var(--primary-orange); border-color: var(--primary-orange); background: rgba(245, 158, 11, 0.1); }
+
+        /* FOOTER SIMULATO */
+        .lab-footer { text-align: center; margin-top: 60px; padding: 40px; border-top: 1px solid var(--border); }
+        .lab-footer img { height: 60px; filter: grayscale(1) opacity(0.5); }
+
+        @media (max-width: 900px) { main { grid-template-columns: 1fr; } .proposal-box { position: static; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-nav">
+            <img src="image/foxshield-logo2.jpg" alt="NF Logo">
+        </div>
+        <a href="index.html" class="btn-back">🔙 TORNA ALL'HUB</a>
+    </header>
+
+    <main>
+        <aside class="proposal-box">
+            <h2>🧪 PROOPONI</h2>
+            <p>Hai un'idea per un nuovo tool di privacy? Descrivila. La community NF voterà i protocolli più necessari.</p>
+            
+            <form id="ideaForm" onsubmit="submitIdea(event)">
+                <div class="input-group">
+                    <label>NOME_PROTOCOLLO</label>
+                    <input type="text" id="appTitle" placeholder="Es: FoxVault, GhostProxy..." required>
+                </div>
+                <div class="input-group">
+                    <label>DESCRIZIONE_TECNICA</label>
+                    <textarea id="appDesc" rows="4" placeholder="Quali vulnerabilità risolve?" required></textarea>
+                </div>
+                <button type="submit" class="btn-transmit">TRASMETTI IN RETE 🚀</button>
+            </form>
+            <div id="successMsg" style="display:none; color: var(--accent-green); margin-top: 15px; font-size: 12px; font-family: monospace;">> TRASMISSIONE COMPLETATA. IDEA IN CODA DI VALIDAZIONE.</div>
+        </aside>
+
+        <section>
+            <h2 class="board-title">PROGETTI_IN_CODA</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Vota le tecnologie che vuoi vedere nel prossimo aggiornamento FoxShield.</p>
+
+            <div class="idea-card">
+                <div class="vote-panel">
+                    <button class="vote-btn" onclick="vota(this, 1242)">▲</button>
+                    <span id="vCount1" style="font-weight: bold;">1242</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 20px;">GhostMail</h4>
+                        <span class="badge badge-dev">In Sviluppo</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px;">Generatore di identità mail istantanee per bypassare tracciamenti e spam. Autodistruzione automatica del nodo.</p>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <div class="vote-panel">
+                    <button class="vote-btn" onclick="vota(this, 856)">▲</button>
+                    <span id="vCount2" style="font-weight: bold;">856</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 20px;">MetaStripper</h4>
+                        <span class="badge badge-eval">In Valutazione</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px;">Protocollo di bonifica forense per immagini e PDF. Rimozione totale di tracce GPS e seriali hardware.</p>
+                </div>
+            </div>
+            
+            <div class="idea-card">
+                <div class="vote-panel">
+                    <button class="vote-btn" onclick="vota(this, 412)">▲</button>
+                    <span id="vCount3" style="font-weight: bold;">412</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 20px;">SpiderWeb</h4>
+                        <span class="badge badge-eval">In Valutazione</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px;">Mappatura visiva delle connessioni Dark-Net. Identificazione di nodi pericolosi e relay sospetti.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="lab-footer">
+        <img src="image/foxshield-logo.jpg" alt="NF Logo">
+        <p style="color: #475569; font-size: 11px; margin-top: 10px; font-family: monospace;">LAB_VERSION: v1.0.4 // ENCRYPTED_BY_FOX</p>
+    </div>
+
+    <script>
+        function submitIdea(e) {
+            e.preventDefault();
+            const btn = document.querySelector('.btn-transmit');
+            btn.innerText = "CRITTOGRAFIA...";
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('ideaForm').reset();
+                document.getElementById('successMsg').style.display = 'block';
+                btn.innerText = "TRASMETTI IN RETE 🚀";
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function vota(btn, count) {
+            if(btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                btn.nextElementSibling.innerText = count;
+            } else {
+                btn.classList.add('active');
+                btn.nextElementSibling.innerText = count + 1;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Chronos Ghost | FoxShield</title>
+    <style>
+        :root { --bg: #000; --neon-red: #ff003c; }
+        body { background: var(--bg); color: white; font-family: 'Courier New', monospace; text-align: center; padding: 40px; overflow: hidden; }
+        .logo img { height: 100px; filter: drop-shadow(0 0 15px var(--neon-red)); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; transform: scale(1.05); } }
+        .back-link { position: absolute; top: 20px; left: 20px; color: #64748b; text-decoration: none; border: 1px solid #333; padding: 10px; }
+        .btn-extract { width: 100%; max-width: 400px; background: var(--neon-red); border: none; padding: 15px; font-weight: 900; cursor: pointer; margin-top: 20px; }
+        .results { margin-top: 30px; display: none; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; border-left: 2px solid var(--neon-red); padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">🔙 TORNA AL HUB</a>
+    <div class="logo"><img src="../image/foxshield-logo.jpg" alt="NF Logo"></div>
+    <h1 style="color: var(--neon-red); letter-spacing: 5px; margin-top: 20px;">CHRONOS_GHOST_PROTOCOL</h1>
+    <input type="text" placeholder="DIGIT_TARGET_ID" style="background: transparent; border: 2px solid var(--neon-red); padding: 15px; color: var(--neon-red); width: 100%; max-width: 400px; text-align: center; outline: none;">
+    <br>
+    <button class="btn-extract" onclick="document.getElementById('results').style.display='block'">EXECUTE_TEMPORAL_SCRAPE</button>
+    <div class="results" id="results">
+        <p style="color: #ef4444;">[DATA_RECOVERED] >> 2024:12:01 - Eliminazione conversazione ID_992</p>
+        <p style="color: #64748b;">[GHOST_LOG] >> 2023:08:15 - Posizione rilevata: SERVER_OSLO_01</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NF FoxShield - The Ultimate Privacy Hub</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --primary-blue: #0ea5e9;
+            --primary-orange: #f59e0b;
+            --neon-green: #10b981;
+            --text-light: #f8fafc;
+            --text-muted: #64748b;
+            --border: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; overflow-x: hidden; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 40px;
+            background-color: rgba(11, 17, 32, 0.95); border-bottom: 2px solid var(--primary-blue);
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+        }
+        .logo-nav img { height: 55px; filter: drop-shadow(0 0 5px var(--primary-blue)); }
+        .btn-lab { background-color: var(--primary-orange); color: #000; border:none; padding: 10px 25px; font-weight: bold; cursor: pointer; clip-path: polygon(0 0, 90% 0, 100% 100%, 10% 100%); }
+
+        main { padding: 0 40px; max-width: 1300px; margin: 0 auto; }
+        .section-title { font-size: 14px; color: var(--primary-orange); letter-spacing: 5px; margin: 50px 0 25px; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .app-card { background-color: var(--bg-card); padding: 25px; border: 1px solid var(--border); transition: 0.3s; text-align: center; display: flex; flex-direction: column; }
+        .app-card:hover { border-color: var(--primary-blue); transform: translateY(-5px); box-shadow: 0 0 15px rgba(14, 165, 233, 0.2); }
+        .app-card h4 { margin-bottom: 10px; color: var(--text-light); font-size: 18px; }
+        .app-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; flex-grow: 1; }
+
+        .btn-app { width: 100%; background: transparent; border: 1px solid var(--primary-blue); color: var(--primary-blue); padding: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-app:hover { background: var(--primary-blue); color: black; }
+
+        footer { background-color: #0b1120; border-top: 2px solid var(--primary-blue); padding: 40px; margin-top: 60px; text-align: center; }
+        .footer-brand img { height: 60px; filter: drop-shadow(0 0 10px var(--primary-blue)); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-nav"><img src="image/foxshield-logo2.jpg" alt="NF Logo"></div>
+        <button class="btn-lab" onclick="window.location.href='laboratorio.html'">🧪 LABORATORIO</button>
+    </header>
+
+    <main>
+        <div class="section-title">CORE_PROTOCOLS</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <h4>💬 CipherNode</h4>
+                <p>Terminale di messaggistica P2P con crittografia end-to-end. Comunicazioni sicure e anonime senza server centrali e assenza totale di log.</p>
+                <button class="btn-app" onclick="window.location.href='apps/ciphernode.html'">APRI TERMINALE</button>
+            </div>
+            <div class="app-card">
+                <h4>📡 SentineL Tracker</h4>
+                <p>Monitoraggio asset su mappa globale con decriptazione dei segnali di posizione in tempo reale su rete cifrata.</p>
+                <button class="btn-app" onclick="window.location.href='apps/sentinel.html'">AVVIA SentineL</button>
+            </div>
+            <div class="app-card">
+                <h4>🚇 FoxTunnel P2P</h4>
+                <p>Trasferimento file diretto tra nodi tramite tunnel protetto. Genera hash univoci per il recupero dati senza intermediari.</p>
+                <button class="btn-app" onclick="window.location.href='apps/foxtunnel.html'">APRI TUNNEL</button>
+            </div>
+            <div class="app-card">
+                <h4>👻 GhostMail</h4>
+                <p>Generatore di email temporanee per proteggere l'identità da spam e tracciamento con autodistruzione automatica.</p>
+                <button class="btn-app" onclick="window.location.href='apps/ghostmail.html'">GENERA MAIL</button>
+            </div>
+        </div>
+
+        <div class="section-title">INVESTIGATIVE_SUITE</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <h4>🕰️ Chronos Ghost</h4>
+                <p>Analisi forense temporale per la ricostruzione di cronologie eliminate e recupero di frammenti di attività rimosse.</p>
+                <button class="btn-app" onclick="window.location.href='apps/chronos.html'">AVVIA CHRONOS</button>
+            </div>
+            <div class="app-card">
+                <h4>🕸️ SpiderWeb</h4>
+                <p>Mappatura visiva delle connessioni Dark-Mesh per identificare l'origine dei segnali e relay di connessione sospetti.</p>
+                <button class="btn-app" onclick="window.location.href='apps/spiderweb.html'">MAPPA RETE</button>
+            </div>
+            <div class="app-card">
+                <h4>🔊 EchoLink</h4>
+                <p>Analisi audio ambientale e de-masking vocale per isolare rumori di fondo e verificare l'autenticità delle tracce.</p>
+                <button class="btn-app" onclick="window.location.href='apps/echolink.html'">AVVIA ECHOLINK</button>
+            </div>
+        </div>
+
+        <div class="section-title">SHIELD_TOOLS</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <h4>🎭 FoxMask AI</h4>
+                <p>Anonimizzazione video tramite AI per il rilevamento e la copertura automatica dei volti con maschera digitale NF Shield.</p>
+                <button class="btn-app" onclick="window.location.href='apps/foxmask.html'">RUN MASK_AI</button>
+            </div>
+            <div class="app-card">
+                <h4>🧹 MetaStripper</h4>
+                <p>Bonifica forense dei file tramite la rimozione permanente di metadati sensibili (GPS, seriali hardware e timestamp).</p>
+                <button class="btn-app" onclick="window.location.href='apps/metastripper.html'">PULISCI FILE</button>
+            </div>
+            <div class="app-card">
+                <h4>🔒 VaultBlock</h4>
+                <p>Caveau Zero-Knowledge locale che cripta testi e chiavi tramite AES-256 senza trasmettere dati fuori dal dispositivo.</p>
+                <button class="btn-app" onclick="window.location.href='apps/vaultblock.html'">ACCEDI AL VAULT</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-brand"><img src="image/foxshield-logo.jpg" alt="NF Footer"></div>
+        <p style="margin-top: 15px; font-size: 11px; color: var(--text-muted); letter-spacing: 1px;">© 2026 NF FOXSHIELD PROTOCOL // ENCRYPTED ECOSYSTEM</p>
+    </footer>
+
+</body>
+</html>

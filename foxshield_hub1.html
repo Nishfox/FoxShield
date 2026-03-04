@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NF FoxShield | Neural Hub</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --neon-blue: #0ea5e9;
+            --neon-orange: #f59e0b;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --text: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: filter 0.5s ease;
+        }
+
+        /* --- BACKGROUND ANIMATO (GRID CYBER) --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: top;
+            animation: moveGrid 10s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+
+        /* --- HEADER & NEURAL SEARCH --- */
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(2,6,23,0.9), transparent);
+        }
+
+        .neural-search {
+            position: relative;
+            width: 450px;
+        }
+
+        .neural-search input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            border: 2px solid var(--neon-blue);
+            padding: 15px 25px;
+            border-radius: 4px;
+            color: white;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .neural-search input:focus {
+            box-shadow: 0 0 25px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+            border-color: white;
+        }
+
+        /* --- NUCLEO CENTRALE: CYBER HEART --- */
+        .core-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .cyber-heart {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: url('image/cyberheart.jpeg') center/cover;
+            border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 50px rgba(14, 165, 233, 0.3);
+            position: relative;
+            z-index: 20;
+            animation: heartbeat 1.2s infinite ease-in-out;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px var(--neon-blue); }
+            15% { transform: scale(1.06); box-shadow: 0 0 70px var(--neon-blue); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.03); }
+        }
+
+        /* --- FULMINI (SVG) --- */
+        #lightning-bolts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #lightning-bolts line {
+            stroke-dasharray: 8;
+            animation: boltDash 0.3s linear infinite;
+        }
+
+        @keyframes boltDash { to { stroke-dashoffset: -16; } }
+
+        /* --- APP NODES --- */
+        .app-orbit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-node {
+            position: absolute;
+            width: 95px;
+            height: 95px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: white;
+            font-size: 11px;
+            font-weight: 900;
+            text-align: center;
+            z-index: 30;
+            text-transform: uppercase;
+        }
+
+        .app-node i { font-size: 28px; margin-bottom: 8px; font-style: normal; }
+
+        /* --- EFFETTO HIGHLIGHT (RICERCA) --- */
+        .app-node.highlighted {
+            border-color: var(--neon-orange) !important;
+            box-shadow: 0 0 40px var(--neon-orange), inset 0 0 10px var(--neon-orange) !important;
+            transform: scale(1.3) !important;
+            opacity: 1 !important;
+            animation: glitchSelect 0.2s infinite;
+        }
+
+        @keyframes glitchSelect {
+            0% { transform: translate(0) scale(1.3); }
+            50% { transform: translate(-2px, 2px) scale(1.32); }
+            100% { transform: translate(2px, -2px) scale(1.3); }
+        }
+
+        /* --- PANIC & TERMINAL --- */
+        .panic-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--neon-red);
+            color: white;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+            z-index: 200;
+            transition: 0.3s;
+        }
+        .panic-btn:hover { transform: scale(1.2); filter: brightness(1.3); }
+
+        #status-terminal {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            font-family: 'Courier New', monospace;
+            color: var(--neon-green);
+            font-size: 13px;
+            background: rgba(0,0,0,0.85);
+            padding: 12px 20px;
+            border-left: 4px solid var(--neon-green);
+            z-index: 200;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="image/foxshield-logo2.jpg" alt="NF" height="60" style="filter: drop-shadow(0 0 10px var(--neon-blue));">
+        </div>
+        <div class="neural-search">
+            <input type="text" id="neural-input" placeholder=">> SCAN_INTENT_KEY..." oninput="neuralLink()">
+        </div>
+        <div class="user-status">
+            <button onclick="ghostProtocol()" style="background:transparent; border:1px solid var(--neon-red); color:var(--neon-red); padding:10px 20px; cursor:pointer; font-weight:bold;">LOCK_SYSTEM</button>
+        </div>
+    </header>
+
+    <div class="core-container">
+        <svg id="lightning-bolts"></svg>
+        <div class="cyber-heart" id="main-heart"></div>
+
+        <div class="app-orbit" id="nodes-container">
+            <a href="app/ciphernode.html" class="app-node" data-tags="chat messaggi crypt messaggistica" style="--angle: 0"><i>💬</i>CIPHER</a>
+            <a href="app/sentinel.html" class="app-node" data-tags="traccia gps tracker mappa" style="--angle: 36"><i>📡</i>SENTINEL</a>
+            <a href="app/foxtunnel.html" class="app-node" data-tags="file p2p tunnel invio" style="--angle: 72"><i>🚇</i>TUNNEL</a>
+            <a href="app/ghostmail.html" class="app-node" data-tags="mail email posta temporanea" style="--angle: 108"><i>👻</i>GHOST</a>
+            <a href="app/chronos.html" class="app-node" data-tags="investigazione tempo chronos timeline" style="--angle: 144"><i>🕰️</i>CHRONOS</a>
+            <a href="app/spiderweb.html" class="app-node" data-tags="dark mesh spider web connessioni" style="--angle: 180"><i>🕸️</i>SPIDER</a>
+            <a href="app/echolink.html" class="app-node" data-tags="audio voce sound echo demask" style="--angle: 216"><i>🔊</i>ECHO</a>
+            <a href="app/foxmask.html" class="app-node" data-tags="mask video ai censura volti" style="--angle: 252"><i>🎭</i>MASK</a>
+            <a href="app/metastripper.html" class="app-node" data-tags="exif dati foto stripper pulizia" style="--angle: 288"><i>🧹</i>STRIP</a>
+            <a href="app/vaultblock.html" class="app-node" data-tags="vault cassaforte locale block cripto" style="--angle: 324"><i>🔒</i>VAULT</a>
+        </div>
+    </div>
+
+    <div id="status-terminal">> NUCLEO FOXSHIELD PRONTO // IN ATTESA DI INPUT...</div>
+    <button class="panic-btn" onclick="ghostProtocol()">PANIC</button>
+
+    <script>
+        const nodes = document.querySelectorAll('.app-node');
+        const radius = 320; // Raggio dell'orbita
+
+        // 1. Posizionamento orbitale automatico
+        function positionNodes() {
+            nodes.forEach((node) => {
+                const angle = parseInt(node.getAttribute('style').match(/\d+/)[0]);
+                const x = Math.cos(angle * Math.PI / 180) * radius;
+                const y = Math.sin(angle * Math.PI / 180) * radius;
+                node.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        }
+        positionNodes();
+
+        // 2. Neural Link: Ricerca e Aggancio Elettrico
+        function neuralLink() {
+            const query = document.getElementById('neural-input').value.toLowerCase().trim();
+            const terminal = document.getElementById('status-terminal');
+            const svg = document.getElementById('lightning-bolts');
+            
+            if (query.length === 0) {
+                resetNodes();
+                terminal.innerText = "> NUCLEO FOXSHIELD PRONTO // IN ATTESA DI INPUT...";
+                return;
+            }
+
+            let found = false;
+
+            nodes.forEach(node => {
+                const name = node.innerText.toLowerCase();
+                const tags = node.getAttribute('data-tags');
+
+                if (name.includes(query) || tags.includes(query)) {
+                    node.classList.add('highlighted');
+                    node.style.opacity = "1";
+                    createLightning(node); // Fulmine istantaneo
+                    terminal.innerText = `> TARGET_LOCK: [${node.innerText}] IDENTIFICATO. SINCRONIZZAZIONE NUCLEARE ATTIVA...`;
+                    found = true;
+                } else {
+                    node.classList.remove('highlighted');
+                    node.style.opacity = "0.1";
+                }
+            });
+
+            if (!found) {
+                svg.innerHTML = "";
+                terminal.innerText = `> SCAN: "${query.toUpperCase()}" - NESSUN MATCH NEL DATABASE.`;
+                terminal.style.color = "var(--neon-red)";
+            } else {
+                terminal.style.color = "var(--neon-green)";
+            }
+        }
+
+        // 3. Creazione Fulmine SVG
+        function createLightning(targetNode) {
+            const svg = document.getElementById('lightning-bolts');
+            const heart = document.getElementById('main-heart').getBoundingClientRect();
+            const target = targetNode.getBoundingClientRect();
+
+            const x1 = heart.left + heart.width / 2;
+            const y1 = heart.top + heart.height / 2;
+            const x2 = target.left + target.width / 2;
+            const y2 = target.top + target.height / 2;
+
+            svg.innerHTML = `
+                <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                      stroke="var(--neon-orange)" stroke-width="4" 
+                      style="filter: drop-shadow(0 0 12px var(--neon-orange)); opacity: 0.8;" />
+                <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                      stroke="white" stroke-width="1" 
+                      style="opacity: 0.5;" />
+            `;
+        }
+
+        function resetNodes() {
+            nodes.forEach(n => {
+                n.classList.remove('highlighted');
+                n.style.opacity = "1";
+                n.style.borderColor = "var(--neon-blue)";
+                n.style.boxShadow = "none";
+            });
+            document.getElementById('lightning-bolts').innerHTML = "";
+        }
+
+        // 4. Protocollo Ghost (Panic Mode)
+        function ghostProtocol() {
+            document.getElementById('status-terminal').innerText = "> GHOST_PROTOCOL ATTIVATO. CANCELLAZIONE BUFFER...";
+            document.body.style.filter = "blur(30px) brightness(0.2)";
+            setTimeout(() => {
+                window.location.href = "https://www.google.com";
+            }, 600);
+        }
+
+        // Messaggio di benvenuto nel terminale
+        window.onload = () => {
+            console.log("FoxShield Hub v3.0 Initialized.");
+        };
+    </script>
+</body>
+</html>
