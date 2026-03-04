@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NF FoxShield | J.A.R.V.I.S. - Adaptive Core</title>
+    <title>NF FoxShield | J.A.R.V.I.S. - GitHub Online Deploy</title>
     <style>
         :root {
             --bg: #010409;
@@ -37,7 +37,7 @@
         .kitt-bar { position: absolute; width: 150px; height: 100%; background: var(--neon-red); filter: blur(1px); box-shadow: 0 0 20px var(--neon-red); left: 50%; transform: translateX(-50%); animation: kittMove 1.8s ease-in-out infinite; }
         @keyframes kittMove { 0%, 100% { width: 30px; opacity: 0.2; } 50% { width: 100%; opacity: 1; } }
 
-        /* --- SEARCH BAR + VOICE (RESPONSIVE) --- */
+        /* --- SEARCH BAR + VOICE --- */
         .neural-search-container { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; position: relative; width: 100%; max-width: 900px; margin: 0 auto; }
         .neural-search { flex: 1; display: flex; justify-content: center; }
         .neural-search input {
@@ -51,7 +51,6 @@
 
         .search-label { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--neon-red) !important; text-transform: uppercase; white-space: nowrap; text-shadow: 0 0 10px var(--neon-red); font-weight: bold; letter-spacing: 2px; }
 
-        /* PC ADJUSTMENTS */
         @media (min-width: 1024px) {
             .neural-search input { max-width: 800px; height: 60px; font-size: 22px; padding: 0 30px; letter-spacing: 3px; }
             .voice-trigger { width: 60px; height: 60px; }
@@ -62,7 +61,7 @@
         /* --- HUB WRAPPER --- */
         .hub-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
 
-        /* --- J.A.R.V.I.S. CORE (RESPONSIVE) --- */
+        /* --- J.A.R.V.I.S. CORE --- */
         .jarvis-container { position: absolute; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 50; }
         .logo-core { position: absolute; width: 120px; height: 120px; background: url('image/foxshield-logo.jpg') center/contain no-repeat; z-index: 60; filter: drop-shadow(0 0 10px var(--neon-red)); animation: pulseLogo 1.5s infinite ease-in-out; }
         .jarvis-ring { position: absolute; border-radius: 50%; border: 2px solid transparent; opacity: 0.5; transition: 0.5s; }
@@ -76,7 +75,7 @@
             .ring-outer-dati { width: 380px; height: 380px; border-width: 4px; }
         }
 
-        /* --- APP NODES (RESPONSIVE) --- */
+        /* --- APP NODES --- */
         .app-node { position: absolute; z-index: 70; display: flex; flex-direction: column; align-items: center; text-decoration: none; width: 90px; transition: 0.5s; cursor: not-allowed; }
         .img-container { position: relative; width: 80px; height: 80px; border: 2px solid var(--neon-red); border-radius: 50%; padding: 5px; background: rgba(0,0,0,0.8); transition: 0.4s; box-shadow: 0 0 10px var(--neon-red); animation: neonPulseRed 2s infinite ease-in-out; }
         .app-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: contain; }
@@ -108,7 +107,7 @@
         .unlocked-interface .kitt-bar { background: var(--neon-green); box-shadow: 0 0 25px var(--neon-green); }
         .unlocked-interface .jarvis-ring { border-color: var(--neon-green); }
 
-        /* --- HOLO MODAL (RESPONSIVE) --- */
+        /* --- HOLO MODAL --- */
         #holo-window { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 95vw; height: 90vh; background: #000; border: 2px solid var(--neon-green); box-shadow: 0 0 50px rgba(16, 185, 129, 0.4); z-index: 1000; display: none; flex-direction: column; transition: 0.4s; opacity: 0; }
         #holo-window.active { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .holo-header { background: var(--neon-green); color: #000; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-family: monospace; font-size: 12px; font-weight: bold; }
@@ -148,16 +147,16 @@
             <div class="jarvis-ring ring-outer-dati" id="ring-o"></div>
         </div>
         <div id="nodes-container">
-            <a href="Apps/ciphernode.html" class="app-node locked" data-name="cipher" onclick="checkAccess(event, 'cipher')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/cipher-messenger.jpg"></div><div class="security-lock">🔒</div><span>CIPHER</span></a>
-            <a href="Apps/sentinel.html" class="app-node locked" data-name="sentinel" onclick="checkAccess(event, 'sentinel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/sentinel.jpg"></div><div class="security-lock">🔒</div><span>SENTINEL</span></a>
-            <a href="Apps/foxtunnel.html" class="app-node locked" data-name="tunnel" onclick="checkAccess(event, 'tunnel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxtunnel.jpg"></div><div class="security-lock">🔒</div><span>TUNNEL</span></a>
-            <a href="Apps/ghostmail.html" class="app-node locked" data-name="ghost" onclick="checkAccess(event, 'ghost')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/ghostmail.jpg"></div><div class="security-lock">🔒</div><span>GHOST</span></a>
-            <a href="Apps/chronos.html" class="app-node locked" data-name="chronos" onclick="checkAccess(event, 'chronos')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/chronos.jpg"></div><div class="security-lock">🔒</div><span>CHRONOS</span></a>
-            <a href="Apps/spiderweb.html" class="app-node locked" data-name="spider" onclick="checkAccess(event, 'spider')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/spiderweb.jpg"></div><div class="security-lock">🔒</div><span>SPIDER</span></a>
-            <a href="Apps/echolink.html" class="app-node locked" data-name="echo" onclick="checkAccess(event, 'echo')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/echolink.jpg"></div><div class="security-lock">🔒</div><span>ECHO</span></a>
-            <a href="Apps/foxmask.html" class="app-node locked" data-name="mask" onclick="checkAccess(event, 'mask')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxmask.jpg"></div><div class="security-lock">🔒</div><span>MASK</span></a>
-            <a href="Apps/metastripper.html" class="app-node locked" data-name="strip" onclick="checkAccess(event, 'strip')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/metarstripper.jpg"></div><div class="security-lock">🔒</div><span>STRIP</span></a>
-            <a href="Apps/vaultblock.html" class="app-node locked" data-name="vault" onclick="checkAccess(event, 'vault')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/vaultblock.jpg"></div><div class="security-lock">🔒</div><span>VAULT</span></a>
+            <a href="apps/ciphernode.html" class="app-node locked" data-name="cipher" onclick="checkAccess(event, 'cipher')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/cipher-messenger.jpg"></div><div class="security-lock">🔒</div><span>CIPHER</span></a>
+            <a href="apps/sentinel.html" class="app-node locked" data-name="sentinel" onclick="checkAccess(event, 'sentinel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/sentinel.jpg"></div><div class="security-lock">🔒</div><span>SENTINEL</span></a>
+            <a href="apps/foxtunnel.html" class="app-node locked" data-name="tunnel" onclick="checkAccess(event, 'tunnel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxtunnel.jpg"></div><div class="security-lock">🔒</div><span>TUNNEL</span></a>
+            <a href="apps/ghostmail.html" class="app-node locked" data-name="ghost" onclick="checkAccess(event, 'ghost')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/ghostmail.jpg"></div><div class="security-lock">🔒</div><span>GHOST</span></a>
+            <a href="apps/chronos.html" class="app-node locked" data-name="chronos" onclick="checkAccess(event, 'chronos')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/chronos.jpg"></div><div class="security-lock">🔒</div><span>CHRONOS</span></a>
+            <a href="apps/spiderweb.html" class="app-node locked" data-name="spider" onclick="checkAccess(event, 'spider')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/spiderweb.jpg"></div><div class="security-lock">🔒</div><span>SPIDER</span></a>
+            <a href="apps/echolink.html" class="app-node locked" data-name="echo" onclick="checkAccess(event, 'echo')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/echolink.jpg"></div><div class="security-lock">🔒</div><span>ECHO</span></a>
+            <a href="apps/foxmask.html" class="app-node locked" data-name="mask" onclick="checkAccess(event, 'mask')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxmask.jpg"></div><div class="security-lock">🔒</div><span>MASK</span></a>
+            <a href="apps/metastripper.html" class="app-node locked" data-name="strip" onclick="checkAccess(event, 'strip')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/metarstripper.jpg"></div><div class="security-lock">🔒</div><span>STRIP</span></a>
+            <a href="apps/vaultblock.html" class="app-node locked" data-name="vault" onclick="checkAccess(event, 'vault')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/vaultblock.jpg"></div><div class="security-lock">🔒</div><span>VAULT</span></a>
         </div>
     </div>
 
@@ -166,7 +165,7 @@
         <iframe id="holo-frame" src=""></iframe>
     </div>
 
-    <div id="status-terminal">> SCANNER_READY // ADAPTIVE_UI_ACTIVE</div>
+    <div id="status-terminal">> SCANNER_READY // GITHUB_ONLINE_DEPLOY</div>
 
     <script>
         const nodes = document.querySelectorAll('.app-node');
@@ -176,11 +175,10 @@
         const holoFrame = document.getElementById('holo-frame');
         let isLoggedIn = false;
 
-        // --- RAGGIO DINAMICO PER MOBILE ---
         function getDynamicRadius() { 
-            if (window.innerWidth < 480) return 150; // Smartphone
-            if (window.innerWidth < 1024) return 220; // Tablet
-            return 460; // PC
+            if (window.innerWidth < 480) return 150;
+            if (window.innerWidth < 1024) return 220;
+            return 460; 
         }
 
         function initHub() {
