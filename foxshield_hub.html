@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NF FoxShield | J.A.R.V.I.S. - High Visibility Core</title>
+    <title>NF FoxShield | J.A.R.V.I.S. - Adaptive Core</title>
     <style>
         :root {
             --bg: #010409;
@@ -26,97 +26,104 @@
 
         /* --- HEADER & K.I.T.T. --- */
         header {
-            position: relative; padding: 25px 30px;
+            position: relative; padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 100; background: rgba(1, 4, 9, 0.98);
         }
-        header img { height: 60px; }
+        header img { height: 40px; }
+        @media (min-width: 768px) { header { padding: 25px 30px; } header img { height: 60px; } }
 
-        .kitt-scanner { 
-            position: absolute; bottom: -12px; left: 0; width: 100%; height: 5px; 
-            background: rgba(255, 0, 0, 0.05); overflow: hidden; 
-        }
+        .kitt-scanner { position: absolute; bottom: -12px; left: 0; width: 100%; height: 5px; background: rgba(255, 0, 0, 0.05); overflow: hidden; }
         .kitt-bar { position: absolute; width: 150px; height: 100%; background: var(--neon-red); filter: blur(1px); box-shadow: 0 0 20px var(--neon-red); left: 50%; transform: translateX(-50%); animation: kittMove 1.8s ease-in-out infinite; }
         @keyframes kittMove { 0%, 100% { width: 30px; opacity: 0.2; } 50% { width: 100%; opacity: 1; } }
 
-        /* --- SEARCH BAR XL + VOICE --- */
-        .neural-search-container { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; position: relative; }
+        /* --- SEARCH BAR + VOICE (RESPONSIVE) --- */
+        .neural-search-container { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; position: relative; width: 100%; max-width: 900px; margin: 0 auto; }
+        .neural-search { flex: 1; display: flex; justify-content: center; }
         .neural-search input {
-            width: 350px; height: 60px; background: #000; border: 1px solid rgba(255, 0, 0, 0.8);
-            border-radius: 2px; padding: 0 30px; color: var(--neon-red); font-family: 'Courier New', monospace;
-            font-size: 22px; font-weight: bold; letter-spacing: 3px; outline: none; transition: 0.5s;
+            width: 100%; max-width: 250px; height: 45px; background: #000; border: 1px solid rgba(255, 0, 0, 0.8);
+            border-radius: 2px; padding: 0 15px; color: var(--neon-red); font-family: 'Courier New', monospace;
+            font-size: 14px; font-weight: bold; outline: none; transition: 0.5s;
         }
-        @media (min-width: 1024px) { .neural-search input { width: 800px; } }
         
-        .voice-trigger {
-            width: 60px; height: 60px; border: 1px solid var(--neon-red); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.3s; background: #000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
-        }
-        .voice-trigger svg { fill: var(--neon-red); width: 24px; }
-        .voice-trigger.listening { animation: voicePulse 1s infinite; border-color: var(--neon-electric); }
+        .voice-trigger { width: 45px; height: 45px; border: 1px solid var(--neon-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #000; }
+        .voice-trigger svg { width: 18px; fill: var(--neon-red); }
 
-        /* ETICHETTA MEGA-BOOST (300% + SEMPRE ROSSA) */
-        .search-label { 
-            position: absolute; 
-            bottom: -45px; /* Spostata più giù per via della grandezza */
-            left: 50%; transform: translateX(-50%); 
-            font-size: 30px; /* Incremento 300% */
-            font-family: 'Courier New', monospace; 
-            letter-spacing: 6px; 
-            color: var(--neon-red) !important; /* Forza il rosso sempre */
-            text-transform: uppercase; 
-            white-space: nowrap;
-            text-shadow: 0 0 10px var(--neon-red);
-            font-weight: bold;
+        .search-label { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--neon-red) !important; text-transform: uppercase; white-space: nowrap; text-shadow: 0 0 10px var(--neon-red); font-weight: bold; letter-spacing: 2px; }
+
+        /* PC ADJUSTMENTS */
+        @media (min-width: 1024px) {
+            .neural-search input { max-width: 800px; height: 60px; font-size: 22px; padding: 0 30px; letter-spacing: 3px; }
+            .voice-trigger { width: 60px; height: 60px; }
+            .voice-trigger svg { width: 24px; }
+            .search-label { font-size: 30px; bottom: -45px; letter-spacing: 6px; }
         }
 
         /* --- HUB WRAPPER --- */
         .hub-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
 
-        /* --- J.A.R.V.I.S. CORE --- */
-        .jarvis-container { position: absolute; width: 500px; height: 500px; display: flex; justify-content: center; align-items: center; z-index: 50; }
-        .logo-core { 
-            position: absolute; width: 214px; height: 214px;
-            background: url('image/foxshield-logo.jpg') center/contain no-repeat; 
-            z-index: 60; filter: drop-shadow(0 0 15px var(--neon-red)); 
-            animation: pulseLogo 1.5s infinite ease-in-out; 
+        /* --- J.A.R.V.I.S. CORE (RESPONSIVE) --- */
+        .jarvis-container { position: absolute; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 50; }
+        .logo-core { position: absolute; width: 120px; height: 120px; background: url('image/foxshield-logo.jpg') center/contain no-repeat; z-index: 60; filter: drop-shadow(0 0 10px var(--neon-red)); animation: pulseLogo 1.5s infinite ease-in-out; }
+        .jarvis-ring { position: absolute; border-radius: 50%; border: 2px solid transparent; opacity: 0.5; transition: 0.5s; }
+        .ring-inner { width: 180px; height: 180px; border-top: 8px solid var(--neon-red); border-bottom: 8px solid var(--neon-red); animation: rotateOrario 10s linear infinite; }
+        .ring-outer-dati { width: 240px; height: 240px; border: 3px dashed var(--neon-red); animation: rotateAntiOrario 20s linear infinite; }
+
+        @media (min-width: 1024px) {
+            .jarvis-container { width: 500px; height: 500px; }
+            .logo-core { width: 214px; height: 214px; }
+            .ring-inner { width: 300px; height: 300px; border-top-width: 15px; border-bottom-width: 15px; }
+            .ring-outer-dati { width: 380px; height: 380px; border-width: 4px; }
         }
 
-        .jarvis-ring { position: absolute; border-radius: 50%; border: 2px solid transparent; opacity: 0.5; transition: 0.5s; }
-        .ring-inner { width: 300px; height: 300px; border-top: 15px solid var(--neon-red); border-bottom: 15px solid var(--neon-red); animation: rotateOrario 10s linear infinite; }
-        .ring-outer-dati { width: 380px; height: 380px; border: 4px dashed var(--neon-red); animation: rotateAntiOrario 20s linear infinite; }
-
-        /* --- APP NODES (126px) --- */
-        .app-node { position: absolute; z-index: 70; display: flex; flex-direction: column; align-items: center; text-decoration: none; width: 130px; transition: 0.5s; cursor: not-allowed; }
-        .img-container { position: relative; width: 126px; height: 126px; border: 2px solid var(--neon-red); border-radius: 50%; padding: 8px; background: rgba(0,0,0,0.8); transition: 0.4s; box-shadow: 0 0 15px var(--neon-red); animation: neonPulseRed 2s infinite ease-in-out; }
+        /* --- APP NODES (RESPONSIVE) --- */
+        .app-node { position: absolute; z-index: 70; display: flex; flex-direction: column; align-items: center; text-decoration: none; width: 90px; transition: 0.5s; cursor: not-allowed; }
+        .img-container { position: relative; width: 80px; height: 80px; border: 2px solid var(--neon-red); border-radius: 50%; padding: 5px; background: rgba(0,0,0,0.8); transition: 0.4s; box-shadow: 0 0 10px var(--neon-red); animation: neonPulseRed 2s infinite ease-in-out; }
         .app-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: contain; }
-        .app-node span { font-size: 13px; font-weight: bold; color: var(--neon-red); margin-top: 10px; transition: 0.5s; }
+        .app-node span { font-size: 10px; font-weight: bold; color: var(--neon-red); margin-top: 5px; transition: 0.5s; }
+
+        @media (min-width: 1024px) {
+            .app-node { width: 130px; }
+            .img-container { width: 126px; height: 126px; padding: 8px; box-shadow: 0 0 15px var(--neon-red); }
+            .app-node span { font-size: 13px; margin-top: 10px; }
+        }
 
         /* SECURITY OVERLAYS */
-        .security-lock { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; color: var(--neon-red); opacity: 0; transition: 0.3s; z-index: 80; }
-        .denied-tooltip { position: absolute; top: -40px; background: var(--neon-red); color: white; padding: 5px 10px; font-size: 10px; font-weight: bold; border-radius: 3px; white-space: nowrap; opacity: 0; transition: 0.3s; pointer-events: none; }
+        .security-lock { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 25px; color: var(--neon-red); opacity: 0; transition: 0.3s; z-index: 80; }
+        @media (min-width: 1024px) { .security-lock { font-size: 40px; } }
+        .denied-tooltip { position: absolute; top: -35px; background: var(--neon-red); color: white; padding: 4px 8px; font-size: 8px; font-weight: bold; border-radius: 3px; white-space: nowrap; opacity: 0; transition: 0.3s; pointer-events: none; }
+        
         .locked:hover .img-container { filter: brightness(0.3) blur(2px); }
         .locked:hover .security-lock, .locked:hover .denied-tooltip { opacity: 1; }
 
-        /* --- UNLOCKED UI --- */
+        /* UNLOCKED */
+        .unlocked { cursor: pointer !important; }
+        .unlocked .img-container { border-color: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); animation: neonPulseGreen 2s infinite ease-in-out; filter: none !important; }
+        .unlocked span { color: var(--neon-green) !important; }
+        .unlocked:hover .img-container { transform: scale(1.1); box-shadow: 0 0 40px var(--neon-green); }
+        .unlocked:hover .security-lock { opacity: 1; color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); }
+
         .unlocked-interface .neural-search input, .unlocked-interface .voice-trigger { border-color: var(--neon-green); color: var(--neon-green); }
         .unlocked-interface .voice-trigger svg { fill: var(--neon-green); }
         .unlocked-interface .kitt-bar { background: var(--neon-green); box-shadow: 0 0 25px var(--neon-green); }
-        .unlocked .img-container { border-color: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); animation: neonPulseGreen 2s infinite ease-in-out; filter: none !important; }
-        .unlocked:hover .img-container { transform: scale(1.25); box-shadow: 0 0 60px var(--neon-green), 0 0 20px #fff; }
-        .unlocked span { color: var(--neon-green) !important; }
         .unlocked-interface .jarvis-ring { border-color: var(--neon-green); }
-        .unlocked-interface .ring-inner { border-top-color: var(--neon-green); border-bottom-color: var(--neon-green); }
 
-        /* ANIMAZIONI */
+        /* --- HOLO MODAL (RESPONSIVE) --- */
+        #holo-window { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 95vw; height: 90vh; background: #000; border: 2px solid var(--neon-green); box-shadow: 0 0 50px rgba(16, 185, 129, 0.4); z-index: 1000; display: none; flex-direction: column; transition: 0.4s; opacity: 0; }
+        #holo-window.active { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .holo-header { background: var(--neon-green); color: #000; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-family: monospace; font-size: 12px; font-weight: bold; }
+        .close-holo { cursor: pointer; background: #000; color: var(--neon-green); padding: 2px 8px; border-radius: 4px; }
+        #holo-frame { width: 100%; flex: 1; border: none; background: #fff; }
+
+        /* ANIMATIONS */
         @keyframes rotateOrario { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes rotateAntiOrario { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
         @keyframes pulseLogo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes neonPulseRed { 0%, 100% { box-shadow: 0 0 15px var(--neon-red); } 50% { box-shadow: 0 0 30px var(--neon-red); } }
-        @keyframes neonPulseGreen { 0%, 100% { box-shadow: 0 0 15px var(--neon-green); } 50% { box-shadow: 0 0 35px var(--neon-green); } }
+        @keyframes neonPulseRed { 0%, 100% { box-shadow: 0 0 10px var(--neon-red); } 50% { box-shadow: 0 0 20px var(--neon-red); } }
+        @keyframes neonPulseGreen { 0%, 100% { box-shadow: 0 0 15px var(--neon-green); } 50% { box-shadow: 0 0 30px var(--neon-green); } }
+        @keyframes voicePulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
 
-        #status-terminal { position: fixed; bottom: 10px; left: 10px; font-family: monospace; color: var(--neon-red); background: rgba(0,0,0,0.8); padding: 5px 10px; border: 1px solid var(--neon-red); font-size: 10px; z-index: 100; }
+        #status-terminal { position: fixed; bottom: 5px; left: 5px; font-family: monospace; color: var(--neon-red); background: rgba(0,0,0,0.8); padding: 3px 8px; border: 1px solid var(--neon-red); font-size: 8px; z-index: 100; }
     </style>
 </head>
 <body class="locked-interface">
@@ -130,7 +137,7 @@
             </div>
             <div class="search-label" id="search-tag">>> SYSTEMSCAN AND THE DEEP SEARCH <<</div>
         </div>
-        <button id="auth-main-btn" onclick="openAuth()" style="background:transparent; border:1px solid var(--neon-green); color:var(--neon-green); padding:15px 30px; cursor:pointer; font-size:12px; font-weight:bold;">INIT</button>
+        <button id="auth-main-btn" onclick="openAuth()" style="background:transparent; border:1px solid var(--neon-green); color:var(--neon-green); padding:10px 15px; cursor:pointer; font-size:10px; font-weight:bold;">INIT</button>
         <div class="kitt-scanner"><div class="kitt-bar"></div></div>
     </header>
 
@@ -141,27 +148,40 @@
             <div class="jarvis-ring ring-outer-dati" id="ring-o"></div>
         </div>
         <div id="nodes-container">
-            <a href="app/ciphernode.html" class="app-node locked" data-name="cipher" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/cipher-messenger.jpg"></div><div class="security-lock">🔒</div><span>CIPHER</span></a>
-            <a href="app/sentinel.html" class="app-node locked" data-name="sentinel" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/sentinel.jpg"></div><div class="security-lock">🔒</div><span>SENTINEL</span></a>
-            <a href="app/foxtunnel.html" class="app-node locked" data-name="tunnel" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxtunnel.jpg"></div><div class="security-lock">🔒</div><span>TUNNEL</span></a>
-            <a href="app/ghostmail.html" class="app-node locked" data-name="ghost" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/ghostmail.jpg"></div><div class="security-lock">🔒</div><span>GHOST</span></a>
-            <a href="app/chronos.html" class="app-node locked" data-name="chronos" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/chronos.jpg"></div><div class="security-lock">🔒</div><span>CHRONOS</span></a>
-            <a href="app/spiderweb.html" class="app-node locked" data-name="spider" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/spiderweb.jpg"></div><div class="security-lock">🔒</div><span>SPIDER</span></a>
-            <a href="app/echolink.html" class="app-node locked" data-name="echo" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/echolink.jpg"></div><div class="security-lock">🔒</div><span>ECHO</span></a>
-            <a href="app/foxmask.html" class="app-node locked" data-name="mask" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxmask.jpg"></div><div class="security-lock">🔒</div><span>MASK</span></a>
-            <a href="app/metastripper.html" class="app-node locked" data-name="strip" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/metarstripper.jpg"></div><div class="security-lock">🔒</div><span>STRIP</span></a>
-            <a href="app/vaultblock.html" class="app-node locked" data-name="vault" onclick="checkAccess(event)"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/vaultblock.jpg"></div><div class="security-lock">🔒</div><span>VAULT</span></a>
+            <a href="Apps/ciphernode.html" class="app-node locked" data-name="cipher" onclick="checkAccess(event, 'cipher')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/cipher-messenger.jpg"></div><div class="security-lock">🔒</div><span>CIPHER</span></a>
+            <a href="Apps/sentinel.html" class="app-node locked" data-name="sentinel" onclick="checkAccess(event, 'sentinel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/sentinel.jpg"></div><div class="security-lock">🔒</div><span>SENTINEL</span></a>
+            <a href="Apps/foxtunnel.html" class="app-node locked" data-name="tunnel" onclick="checkAccess(event, 'tunnel')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxtunnel.jpg"></div><div class="security-lock">🔒</div><span>TUNNEL</span></a>
+            <a href="Apps/ghostmail.html" class="app-node locked" data-name="ghost" onclick="checkAccess(event, 'ghost')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/ghostmail.jpg"></div><div class="security-lock">🔒</div><span>GHOST</span></a>
+            <a href="Apps/chronos.html" class="app-node locked" data-name="chronos" onclick="checkAccess(event, 'chronos')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/chronos.jpg"></div><div class="security-lock">🔒</div><span>CHRONOS</span></a>
+            <a href="Apps/spiderweb.html" class="app-node locked" data-name="spider" onclick="checkAccess(event, 'spider')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/spiderweb.jpg"></div><div class="security-lock">🔒</div><span>SPIDER</span></a>
+            <a href="Apps/echolink.html" class="app-node locked" data-name="echo" onclick="checkAccess(event, 'echo')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/echolink.jpg"></div><div class="security-lock">🔒</div><span>ECHO</span></a>
+            <a href="Apps/foxmask.html" class="app-node locked" data-name="mask" onclick="checkAccess(event, 'mask')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/foxmask.jpg"></div><div class="security-lock">🔒</div><span>MASK</span></a>
+            <a href="Apps/metastripper.html" class="app-node locked" data-name="strip" onclick="checkAccess(event, 'strip')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/metarstripper.jpg"></div><div class="security-lock">🔒</div><span>STRIP</span></a>
+            <a href="Apps/vaultblock.html" class="app-node locked" data-name="vault" onclick="checkAccess(event, 'vault')"><div class="denied-tooltip">ACCESSO NEGATO</div><div class="img-container"><img src="image/vaultblock.jpg"></div><div class="security-lock">🔒</div><span>VAULT</span></a>
         </div>
     </div>
 
-    <div id="status-terminal">> SCANNER_READY // FONT_BOOST_XL // KITT_OFFSET_STABLE</div>
+    <div id="holo-window">
+        <div class="holo-header"><span id="holo-title">>> J.A.R.V.I.S. LINK ACTIVE</span><span class="close-holo" onclick="closeHolo()">CLOSE [X]</span></div>
+        <iframe id="holo-frame" src=""></iframe>
+    </div>
+
+    <div id="status-terminal">> SCANNER_READY // ADAPTIVE_UI_ACTIVE</div>
 
     <script>
         const nodes = document.querySelectorAll('.app-node');
         const searchInput = document.getElementById('neural-input');
+        const voiceBtn = document.getElementById('start-voice');
+        const holoWin = document.getElementById('holo-window');
+        const holoFrame = document.getElementById('holo-frame');
         let isLoggedIn = false;
 
-        function getDynamicRadius() { return window.innerWidth < 1024 ? 220 : 460; }
+        // --- RAGGIO DINAMICO PER MOBILE ---
+        function getDynamicRadius() { 
+            if (window.innerWidth < 480) return 150; // Smartphone
+            if (window.innerWidth < 1024) return 220; // Tablet
+            return 460; // PC
+        }
 
         function initHub() {
             const radius = getDynamicRadius();
@@ -175,12 +195,15 @@
             });
         }
 
+        function resetInterface() { searchInput.value = ""; nodes.forEach(node => { node.style.opacity = "1"; }); }
+        function openInHolo(url, title) { document.getElementById('holo-title').innerText = ">> EXECUTE: " + title.toUpperCase(); holoFrame.src = url; holoWin.style.display = 'flex'; setTimeout(() => holoWin.classList.add('active'), 10); }
+        function closeHolo() { holoWin.classList.remove('active'); setTimeout(() => { holoWin.style.display = 'none'; holoFrame.src = ""; resetInterface(); }, 400); }
+        function checkAccess(event, name) { event.preventDefault(); if (!isLoggedIn) { document.getElementById('status-terminal').innerText = ">> ERR: AUTH_REQUIRED"; } else { openInHolo(event.currentTarget.getAttribute('href'), name); } }
+
         function neuralSearch() {
             const query = searchInput.value.toLowerCase().trim();
-            nodes.forEach(node => {
-                const name = node.getAttribute('data-name');
-                node.style.opacity = (!query || name.includes(query)) ? "1" : "0.05";
-            });
+            if (query === "") { nodes.forEach(node => node.style.opacity = "1"); return; }
+            nodes.forEach(node => { const name = node.getAttribute('data-name'); node.style.opacity = name.includes(query) ? "1" : "0.05"; });
         }
 
         function handleNeuralCommand(event) {
@@ -189,22 +212,23 @@
                 if (!query) return;
                 let targetApp = null;
                 nodes.forEach(node => { if (node.getAttribute('data-name') === query) targetApp = node; });
-                if (targetApp) {
-                    if (!isLoggedIn) {
-                        document.getElementById('status-terminal').innerText = ">> ERR: AUTH_REQUIRED";
-                    } else { window.location.href = targetApp.getAttribute('href'); }
-                } else { window.open(`https://search.brave.com/search?q=${encodeURIComponent(query)}`, '_blank'); }
+                if (targetApp) { if (!isLoggedIn) { document.getElementById('status-terminal').innerText = ">> ERR: AUTH_REQUIRED"; } else { openInHolo(targetApp.getAttribute('href'), query); } }
+                else { resetInterface(); window.open(`https://duckduckgo.com/?q=${encodeURIComponent(query)}`, '_blank'); }
             }
         }
 
-        function checkAccess(event) { if (!isLoggedIn) event.preventDefault(); }
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "it-IT";
+            recognition.onresult = (e) => { searchInput.value = e.results[0][0].transcript.toLowerCase(); neuralSearch(); setTimeout(() => handleNeuralCommand({key: "Enter"}), 800); };
+            voiceBtn.onclick = () => recognition.start();
+        }
 
         function openAuth() { 
             isLoggedIn = true;
             document.body.classList.add('unlocked-interface');
             document.getElementById('status-terminal').innerText = "> SYSTEM UNLOCKED.";
-            document.getElementById('status-terminal').style.color = "var(--neon-green)";
-            nodes.forEach(n => { n.classList.remove('locked'); n.classList.add('unlocked'); });
+            nodes.forEach(n => { n.classList.remove('locked'); n.classList.add('unlocked'); const lock = n.querySelector('.security-lock'); if(lock) { lock.innerText = '🔓'; lock.style.color = 'var(--neon-green)'; } });
             initHub();
         }
 
