@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FOXSHIELD // Vault Explorer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;700;900&family=VT323&display=swap');
+
+        :root { 
+            --radius: 15px; 
+            --border-width: 0px; 
+            --border-type: solid;
+            --font-head: 'Orbitron', sans-serif; 
+            --font-body: 'Inter', sans-serif;
+        }
+
+        /* 1. TEMA APPLE WHITE (Default) */
+        [data-theme="apple"] { 
+            --bg-color: #f0f0f3; --text-main: #1d1d1f; --text-secondary: #86868b;
+            --accent-1: #0071e3; --alert: #ff3b30; --hacker-green: #34c759;
+            --shadow-light: #ffffff; --shadow-dark: #aeaec0;
+            --panel-bg: #f0f0f3; --input-bg: #f0f0f3; --btn-bg: #f0f0f3;
+        }
+
+        /* 2. TEMA JEAN DARK */
+        [data-theme="jean_dark"] {
+            --bg-color: #0f0a05; --text-main: #f39c12; --text-secondary: #8a631c;
+            --accent-1: #f1c40f; --alert: #e74c3c; --hacker-green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.2); --shadow-dark: rgba(0, 0, 0, 0.9);
+            --panel-bg: #0f0a05; --input-bg: #170f08; --btn-bg: #170f08;
+        }
+
+        /* 3. TEMA JEAN GREY */
+        [data-theme="jean_grey"] {
+            --bg-color: #3b3b3d; --text-main: #f39c12; --text-secondary: #a0a0a5;
+            --accent-1: #f1c40f; --alert: #e74c3c; --hacker-green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.25); --shadow-dark: rgba(0, 0, 0, 0.7);
+            --panel-bg: #3b3b3d; --input-bg: #323234; --btn-bg: #323234;
+        }
+
+        /* 4. TEMA GHOST */
+        [data-theme="ghost"] {
+            --bg-color: #f8f9fa; --text-main: #495057; --text-secondary: #adb5bd;
+            --accent-1: #6c757d; --alert: #d90429; --hacker-green: #2ecc71;
+            --shadow-light: #ffffff; --shadow-dark: #dee2e6;
+            --panel-bg: #f8f9fa; --input-bg: #f8f9fa; --btn-bg: #f8f9fa;
+        }
+
+        /* 5. TEMA SILVER */
+        [data-theme="silver"] {
+            --bg-color: #e0e5ec; --text-main: #2d3436; --text-secondary: #636e72;
+            --accent-1: #0984e3; --alert: #d63031; --hacker-green: #00b894;
+            --shadow-light: #ffffff; --shadow-dark: #a3b1c6;
+            --panel-bg: #e0e5ec; --input-bg: #e0e5ec; --btn-bg: #e0e5ec;
+        }
+
+        /* 6. TEMA STEALTH */
+        [data-theme="stealth"] {
+            --bg-color: #2c2c2e; --text-main: #f2f2f7; --text-secondary: #aeaeb2;
+            --accent-1: #0a84ff; --alert: #ff453a; --hacker-green: #32d74b;
+            --shadow-light: #3a3a3c; --shadow-dark: #1c1c1e;
+            --panel-bg: #2c2c2e; --input-bg: #2c2c2e; --btn-bg: #2c2c2e;
+        }
+
+        /* 7. TEMA NEON MATRIX */
+        [data-theme="neon"] {
+            --bg-color: #0f0f13; --text-main: #00f2ff; --text-secondary: #747494;
+            --accent-1: #ff00c1; --alert: #ff003c; --hacker-green: #00ffaa;
+            --shadow-light: rgba(0, 242, 255, 0.2); --shadow-dark: rgba(0, 0, 0, 0.8);
+            --panel-bg: #0f0f13; --input-bg: #15151a; --btn-bg: #15151a;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; 
+            background: var(--bg-color); color: var(--text-main); font-family: var(--font-body); text-transform: uppercase; overflow-x: hidden; 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        #matrix-canvas { display: none; }
+        .grid-bg { display: none; }
+
+        /* --- TOP BAR --- */
+        .top-bar { 
+            background: var(--bg-color); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
+            font-family: var(--font-head); font-size: 0.8rem; font-weight: 900;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; transition: 0.5s;
+        }
+        .op-status { color: var(--hacker-green); display: flex; align-items: center; gap: 10px; }
+        .pulse-dot { width: 10px; height: 10px; background: var(--hacker-green); border-radius: 50%; box-shadow: 0 0 8px var(--hacker-green); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
+
+        /* --- SEARCH CONSOLE (RILIEVO E SCAVATO) --- */
+        .search-console { 
+            background: var(--panel-bg); padding: 40px; text-align: center; position: relative; 
+            border-radius: var(--radius); box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light); 
+            transition: 0.5s;
+        }
+        
+        .search-input { 
+            background: var(--input-bg); border: none; color: var(--text-main); 
+            font-family: var(--font-head); font-size: 1.2rem; font-weight: 900; text-align: center; padding: 15px; 
+            width: 80%; max-width: 400px; outline: none; transition: 0.5s; border-radius: 12px;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        .search-input:focus { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); color: var(--accent-1); }
+        
+        .btn-search { 
+            background: var(--btn-bg); color: var(--accent-1); border: none; border-radius: 12px;
+            padding: 15px 40px; font-family: var(--font-head); font-weight: 900; cursor: pointer; margin-top: 25px; transition: 0.5s; font-size: 1rem; 
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+        .btn-search:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: scale(0.98); }
+
+        /* --- CASE INFO (RILIEVO) --- */
+        .case-info-panel { 
+            margin-top: 30px; border-radius: var(--radius); background: var(--panel-bg); 
+            max-height: 0; overflow: hidden; transition: max-height 0.8s ease-in-out, opacity 0.5s, box-shadow 0.5s; opacity: 0; 
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+        }
+        .case-info-panel.open { max-height: 1200px; opacity: 1; padding-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; font-size: 0.9rem; font-weight: 700; }
+        .info-item span { color: var(--text-secondary); font-family: var(--font-head); font-size: 0.75rem; display: block; margin-bottom: 5px; }
+        .info-val { color: var(--hacker-green); font-size: 1.1rem; font-weight: 900; }
+        
+        .target-data-terminal { grid-column: span 2; margin-top: 10px; padding-top: 15px; }
+        .matrix-readout {
+            font-family: 'VT323', monospace; color: var(--text-main); font-size: 1.1rem;
+            background: var(--input-bg); padding: 20px; border-radius: 12px;
+            white-space: pre-wrap; min-height: 60px; text-transform: none;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); transition: 0.5s;
+        }
+
+        /* --- FOLDER FILTER (RILIEVO E SCAVATO) --- */
+        #folder-filter-container { 
+            margin-top: 30px; display: none; align-items: center; gap: 15px; 
+            background: var(--panel-bg); padding: 20px; border-radius: var(--radius); 
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); transition: 0.5s;
+        }
+        #folder-select { 
+            background: var(--input-bg); color: var(--accent-1); border: none; border-radius: 10px;
+            padding: 12px; font-family: var(--font-body); font-weight: 700; font-size: 0.9rem; flex-grow: 1; outline: none; 
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transition: 0.5s;
+        }
+
+        /* --- OS WINDOW (FILE LIST) --- */
+        .os-window { 
+            margin-top: 20px; border-radius: var(--radius); background: var(--panel-bg); display: none; flex-direction: column; 
+            box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light); overflow: hidden; transition: 0.5s;
+        }
+        .os-titlebar { background: var(--bg-color); padding: 15px 20px; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem; color: var(--text-secondary); }
+        .os-content { padding: 0; max-height: 400px; overflow-y: auto; }
+        
+        .file-table { width: 100%; border-collapse: collapse; text-align: left; font-weight: 600;}
+        .file-table th { padding: 15px 20px; color: var(--text-secondary); font-family: var(--font-head); font-size: 0.75rem; border-bottom: 2px solid var(--bg-color); position: sticky; top:0; background: var(--panel-bg); z-index: 5;}
+        .file-table td { padding: 15px 20px; border-bottom: 2px solid var(--bg-color); vertical-align: middle; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .file-table tr:hover td { background: var(--input-bg); box-shadow: inset 2px 2px 5px var(--shadow-dark); }
+        
+        /* Icone File IN RILIEVO */
+        .icon-box-small {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .name-cell { font-weight: 900; letter-spacing: 1px; color: var(--text-main); }
+
+        /* --- GLITCH MODAL --- */
+        #glitch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 5000; display: flex; align-items: center; justify-content: center; flex-direction: column; opacity: 0; pointer-events: none; transition: 0.4s; }
+        #glitch-overlay.active { opacity: 1; pointer-events: auto; }
+        .glitch-text { font-family: var(--font-head); font-size: 2rem; font-weight: 900; color: var(--text-main); position: relative; text-transform: uppercase; letter-spacing: 5px; text-align: center; }
+        .glitch-code { color: var(--text-secondary); font-family: monospace; font-size: 1rem; margin-top: 20px; width: 80%; text-align: center; word-break: break-all; opacity: 0.7; }
+        
+        /* --- MEDIA MODAL --- */
+        #media-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(240,240,243,0.9); backdrop-filter: blur(10px); z-index: 6000; display: flex; align-items: center; justify-content: center; flex-direction: column; opacity: 0; pointer-events: none; transition: 0.4s; }
+        #media-modal.active { opacity: 1; pointer-events: auto; }
+        .close-modal { 
+            position: absolute; top: 30px; right: 40px; color: var(--alert); font-size: 0.9rem; font-weight: 900; cursor: pointer; font-family: var(--font-head); 
+            background: var(--btn-bg); padding: 12px 20px; border-radius: 12px; transition: 0.3s;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+        }
+        .close-modal:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: scale(0.95);}
+        
+        #error-msg { display: none; color: var(--alert); font-family: var(--font-head); font-weight: 900; font-size: 1rem; margin-top: 20px; }
+
+        @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body data-theme="apple">
+    
+    <div class="top-bar">
+        <div class="op-status"><div class="pulse-dot"></div><span>OP: <span id="user-name" style="color: var(--text-main);">ADMIN_FOX</span> // NAS CONNECTED</span></div>
+        <div>
+            <span onclick="window.location.href='index.html'" style="color: var(--alert); font-weight: 900; cursor:pointer; margin-right: 15px;">[ &lt; HOME ]</span>
+            <span style="color: var(--accent-1); margin-right: 15px; cursor:pointer; font-weight: 900;" onclick="toggleTheme()">[ STILE ]</span>
+            <span style="color: var(--text-secondary); font-weight: 700;">UPTIME: <span id="session-timer" style="color: var(--text-main);">00:00:00</span></span>
+        </div>
+    </div>
+
+    <div id="glitch-overlay">
+        <div class="glitch-text" data-text="CONNESSIONE AL NAS IN CORSO...">CONNESSIONE AL NAS IN CORSO...</div>
+        <div id="glitch-hex" class="glitch-code"></div>
+    </div>
+
+    <div class="container">
+        <div class="search-console">
+            <h1 style="font-family: var(--font-head); font-weight: 900; letter-spacing: 2px; margin-top: 0; color: var(--text-main);">ESTRAZIONE DIRECTORY VAULT</h1>
+            <p style="color: var(--text-secondary); font-weight: 700; font-size: 0.85rem; margin-bottom: 30px;">INSERISCI IL NOME DELLA CARTELLA PRESENTE SUL NAS</p>
+            <input type="text" id="case-search-input" class="search-input" placeholder="ES: CASO_ALPHA">
+            <br>
+            <button class="btn-search" onclick="avviaRicercaGlitch()">CONNETTI AL SERVER</button>
+            <div id="error-msg">IL CASO NON È STATO TROVATO.</div>
+        </div>
+
+        <div id="case-info" class="case-info-panel">
+            <div class="info-grid">
+                <div class="info-item"><span>ID CARTELLA RECUPERATA</span><div class="info-val" id="res-id">--</div></div>
+                <div class="info-item"><span>STATO SERVER NAS</span><div class="info-val" style="color: var(--hacker-green);">CONNESSO - ACCESSO CONSENTITO</div></div>
+                
+                <div class="target-data-terminal">
+                    <span>INFO SCHEDA TARGET (Da ID_utente.txt)</span>
+                    <div id="target-readout" class="matrix-readout">In attesa di decrittazione...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="folder-filter-container">
+            <span style="font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; color: var(--text-secondary);">NAVIGA SESSIONE:</span>
+            <select id="folder-select" onchange="filtraPerCartella()">
+                <option value="ALL">-- MOSTRA TUTTI I FILE (TIMELINE) --</option>
+            </select>
+        </div>
+
+        <div id="os-window" class="os-window">
+            <div class="os-titlebar"><span>📁 ROOT_NAS \ FoxShield_Vault \ <span id="breadcrumb-case" style="color: var(--accent-1);"></span></span></div>
+            <div class="os-content">
+                <table class="file-table">
+                    <thead><tr><th style="width: 60px; text-align:center;">TIPO</th><th>NOME FILE</th><th>DIMENSIONE</th><th>DATA CREAZIONE</th></tr></thead>
+                    <tbody id="file-list-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="media-modal">
+        <div class="close-modal" onclick="chiudiModale()">CHIUDI [ X ]</div>
+        <div id="modal-body" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; padding: 20px; box-sizing: border-box;"></div>
+    </div>
+
+    <script>
+        /* === GESTIONE TEMI 3D === */
+        function toggleTheme() {
+            const themes = ['apple', 'jean_dark', 'jean_grey', 'ghost', 'silver', 'stealth', 'neon'];
+            let current = document.body.getAttribute('data-theme') || 'apple';
+            let next = themes[(themes.indexOf(current) + 1) % themes.length];
+            document.body.setAttribute('data-theme', next);
+        }
+
+        /* === LOGICA ORIGINALE DEL DATABASE (INTONSA) === */
+        let tuttiIFiles = []; 
+        let cartelleEsistenti = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('foxshield_logged_in') !== 'true') window.location.href = 'index.html';
+            
+            // Popola il nome dell'operatore se presente in cache
+            const opName = localStorage.getItem('foxshield_user') || 'ADMIN_FOX';
+            document.getElementById('user-name').innerText = opName.toUpperCase();
+
+            let loginTime = localStorage.getItem('foxshield_login_time'); 
+            if (!loginTime) { loginTime = Date.now(); localStorage.setItem('foxshield_login_time', loginTime); }
+            setInterval(() => { 
+                let diff = Math.floor((Date.now() - loginTime) / 1000); 
+                document.getElementById('session-timer').innerText = `${Math.floor(diff / 3600).toString().padStart(2, '0')}:${Math.floor((diff % 3600) / 60).toString().padStart(2, '0')}:${(diff % 60).toString().padStart(2, '0')}`; 
+            }, 1000);
+            
+            const cacheCaso = localStorage.getItem('foxshield_cache_database');
+            if(cacheCaso) { document.getElementById('case-search-input').value = cacheCaso; caricaDatiSilenzioso(cacheCaso); }
+        });
+
+        function avviaRicercaGlitch() {
+            const input = document.getElementById('case-search-input').value.trim(); if(input === "") return;
+            document.getElementById('error-msg').style.display = 'none'; 
+            document.getElementById('case-info').classList.remove('open'); 
+            document.getElementById('os-window').style.display = 'none';
+            document.getElementById('folder-filter-container').style.display = 'none';
+            
+            const glitchOverlay = document.getElementById('glitch-overlay'); 
+            const hexContainer = document.getElementById('glitch-hex');
+            glitchOverlay.classList.add('active');
+            let hexInterval = setInterval(() => { 
+                let hexStr = ''; 
+                for(let i=0; i<150; i++) hexStr += Math.floor(Math.random()*16).toString(16).toUpperCase() + ' '; 
+                hexContainer.innerText = hexStr; 
+            }, 50);
+            
+            setTimeout(() => { 
+                clearInterval(hexInterval); 
+                glitchOverlay.classList.remove('active'); 
+                caricaDatiDalNAS(input); 
+            }, 2000);
+        }
+
+        async function caricaDatiSilenzioso(input) { document.getElementById('error-msg').style.display = 'none'; caricaDatiDalNAS(input); }
+
+        async function caricaDatiDalNAS(input) {
+            try {
+                const response = await fetch('esplora_vault.php?caso=' + encodeURIComponent(input));
+                const serverData = await response.json();
+                if(serverData.status === 'error') {
+                    document.getElementById('error-msg').innerText = serverData.msg;
+                    document.getElementById('error-msg').style.display = 'block';
+                    return;
+                }
+
+                localStorage.setItem('foxshield_cache_database', input);
+                document.getElementById('res-id').innerText = input;
+                document.getElementById('breadcrumb-case').innerText = input;
+                tuttiIFiles = serverData.files; 
+                cartelleEsistenti = serverData.folders || [];
+
+                const select = document.getElementById('folder-select');
+                select.innerHTML = '<option value="ALL">-- MOSTRA TUTTI I FILE (TIMELINE) --</option>';
+
+                if(cartelleEsistenti.length > 0) {
+                    cartelleEsistenti.forEach(f => {
+                        select.innerHTML += `<option value="${f}">${f}</option>`;
+                    });
+                }
+
+                animazioneDecrittazioneTesto("target-readout", serverData.dati_target);
+                renderizzaTabella(tuttiIFiles);
+
+                document.getElementById('folder-filter-container').style.display = 'flex';
+                document.getElementById('case-info').classList.add('open');
+                setTimeout(() => { document.getElementById('os-window').style.display = 'flex'; }, 300);
+            } catch(e) {
+                document.getElementById('error-msg').innerText = "ERRORE DI CONNESSIONE AL SERVER NAS."; 
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        function filtraPerCartella() {
+            const folder = document.getElementById('folder-select').value;
+            renderizzaTabella(folder === "ALL" ? tuttiIFiles : tuttiIFiles.filter(f => f.folder === folder));
+        }
+
+        function navigaInCartella(nomeCartella) {
+            const select = document.getElementById('folder-select');
+            select.value = nomeCartella; 
+            filtraPerCartella(); 
+        }
+
+        function renderizzaTabella(files) {
+            const tbody = document.getElementById('file-list-body');
+            tbody.innerHTML = '';
+            
+            const currentFilter = document.getElementById('folder-select').value;
+
+            if(currentFilter === "ALL") {
+                cartelleEsistenti.forEach(fName => {
+                    tbody.innerHTML += `
+                        <tr onclick="navigaInCartella('${fName}')" style="cursor: pointer;">
+                            <td align="center"><div class="icon-box-small">📁</div></td>
+                            <td class="name-cell" style="color: var(--accent-1);">[ DIRECTORY ] ${fName}</td>
+                            <td>--</td>
+                            <td style="font-size:0.75rem; color: var(--text-secondary); font-weight: 700;">CLICCA PER APRIRE</td>
+                        </tr>`;
+                });
+            }
+
+            if(files.length === 0) {
+                if(currentFilter !== "ALL") tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--alert); padding: 30px;">NESSUN FILE TROVATO.</td></tr>`;
+            } else {
+                files.forEach(file => {
+                    let icon = '📄'; let color = 'var(--text-main)';
+                    const ext = file.name.split('.').pop().toLowerCase();
+
+                    if(file.type === 'video') { icon = '🎬'; color = 'var(--alert)'; } 
+                    else if(file.type === 'foto') { icon = '📸'; color = 'var(--accent-1)'; } 
+                    else if(ext === 'mp3' || ext === 'wav' || file.type === 'audio') { icon = '🎵'; color = 'var(--hacker-green)'; } 
+                    else if(ext === 'doc' || ext === 'docx') { icon = '📝'; color = 'var(--accent-1)'; } 
+                    else if(ext === 'txt') { icon = '📄'; color = 'var(--text-secondary)'; }
+
+                    tbody.innerHTML += `
+                        <tr onclick="apriMedia('${file.type}', '${file.path}', '${file.name}')">
+                            <td align="center"><div class="icon-box-small">${icon}</div></td>
+                            <td class="name-cell" style="color: ${color};">${file.name}<br><span style="color:var(--text-secondary); font-size:0.7rem;">PATH: ${file.folder}</span></td>
+                            <td style="color: var(--text-secondary); font-weight: 700;">${file.size}</td>
+                            <td style="color: var(--text-secondary); font-weight: 700;">${file.date}</td>
+                        </tr>`;
+                });
+            }
+        }
+
+        let decriptaggioIntervallo;
+        function animazioneDecrittazioneTesto(elementId, textReale) {
+            const el = document.getElementById(elementId);
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%#&_";
+            clearInterval(decriptaggioIntervallo);
+            let indicatoreCopia = 0;
+            decriptaggioIntervallo = setInterval(() => {
+                let risultato = "";
+                for(let i = 0; i < textReale.length; i++) {
+                    if (i < indicatoreCopia) risultato += textReale[i];
+                    else if (i < indicatoreCopia + 10) {
+                        if(textReale[i] === '\n' || textReale[i] === ' ') risultato += textReale[i];
+                        else risultato += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                }
+                el.innerText = risultato + "█";
+                indicatoreCopia += 1;
+                if(indicatoreCopia > textReale.length) { clearInterval(decriptaggioIntervallo); el.innerText = textReale; }
+            }, 15); // Velocizzata per feedback migliore
+        }
+
+        function apriMedia(tipo, path, nome) {
+            const modal = document.getElementById('media-modal'); const body = document.getElementById('modal-body'); body.innerHTML = ''; 
+            
+            // Applichiamo stile Neumorfico al modale player
+            let modalBoxStyle = "padding:40px; text-align:center; min-width: 300px; background: var(--bg-color); border-radius: 25px; box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light);";
+
+            if (tipo === 'video') {
+                body.innerHTML = `<video controls autoplay style="max-height: 80vh; max-width: 95vw; border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); background: #000;"><source src="${path}" type="video/mp4"></video>`;
+            } 
+            else if (tipo === 'foto') {
+                body.innerHTML = `<img src="${path}" alt="Evidenza" style="max-height: 80vh; max-width: 95vw; border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);">`;
+            } 
+            else if (tipo === 'audio') {
+                body.innerHTML = `<div style="${modalBoxStyle}"><h2 style="color:var(--hacker-green); font-family: var(--font-head); font-weight: 900;">TRACCIA AUDIO</h2><p style="margin-bottom: 20px; font-weight: 700; color: var(--text-main);">${nome}</p><audio controls autoplay style="width: 100%; border-radius: 10px; outline: none; box-shadow: inset 2px 2px 5px var(--shadow-dark);"><source src="${path}" type="audio/webm"></audio></div>`;
+            } 
+            else {
+                body.innerHTML = `<div style="${modalBoxStyle}"><h2 style="color:var(--accent-1); font-family: var(--font-head); font-weight: 900;">DOCUMENTO ESTRATTO</h2><p style="margin-bottom: 30px; font-weight: 700; color: var(--text-main);">${nome}</p><a href="${path}" download style="text-decoration: none; display: inline-block; background: var(--btn-bg); color: var(--text-main); font-family: var(--font-head); font-weight: 900; padding: 15px 30px; border-radius: 15px; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);">SCARICA FILE</a></div>`;
+            }
+            modal.classList.add('active');
+        }
+        function chiudiModale() { const modal = document.getElementById('media-modal'); const body = document.getElementById('modal-body'); modal.classList.remove('active'); setTimeout(() => { body.innerHTML = ''; }, 400); }
+    </script>
+</body>
+</html>

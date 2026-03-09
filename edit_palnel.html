@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>SentineL - Edit Pannel Ultimate (ONLINE)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;600;700;900&family=VT323&display=swap');
+
+        :root {
+            --radius: 15px;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Inter', 'Segoe UI', sans-serif;
+            
+            /* Costanti Explorer */
+            --win-bg: #ffffff;
+            --win-border: #d1d1d1;
+            --win-text: #000000;
+            --win-hover: #e5f3ff;
+            --win-select: #cce8ff;
+        }
+
+        /* I 7 STILI 3D NEUMORFICI */
+        [data-theme="apple"] { --bg: #f0f0f3; --card: #f0f0f3; --text: #1d1d1f; --subtext: #86868b; --cyan: #0071e3; --red: #ff3b30; --green: #34c759; --shadow-light: #ffffff; --shadow-dark: #aeaec0; --input-bg: #f0f0f3; --btn-bg: #f0f0f3; }
+        [data-theme="jean_dark"] { --bg: #0f0a05; --card: #0f0a05; --text: #f39c12; --subtext: #8a631c; --cyan: #f1c40f; --red: #e74c3c; --green: #d35400; --shadow-light: rgba(243, 156, 18, 0.2); --shadow-dark: rgba(0, 0, 0, 0.9); --input-bg: #170f08; --btn-bg: #170f08; }
+        [data-theme="jean_grey"] { --bg: #3b3b3d; --card: #3b3b3d; --text: #f39c12; --subtext: #a0a0a5; --cyan: #f1c40f; --red: #e74c3c; --green: #d35400; --shadow-light: rgba(243, 156, 18, 0.25); --shadow-dark: rgba(0, 0, 0, 0.7); --input-bg: #323234; --btn-bg: #323234; }
+        [data-theme="ghost"] { --bg: #f8f9fa; --card: #f8f9fa; --text: #495057; --subtext: #adb5bd; --cyan: #6c757d; --red: #d90429; --green: #2ecc71; --shadow-light: #ffffff; --shadow-dark: #dee2e6; --input-bg: #f8f9fa; --btn-bg: #f8f9fa; }
+        [data-theme="silver"] { --bg: #e0e5ec; --card: #e0e5ec; --text: #2d3436; --subtext: #636e72; --cyan: #0984e3; --red: #d63031; --green: #00b894; --shadow-light: #ffffff; --shadow-dark: #a3b1c6; --input-bg: #e0e5ec; --btn-bg: #e0e5ec; }
+        [data-theme="stealth"] { --bg: #2c2c2e; --card: #2c2c2e; --text: #f2f2f7; --subtext: #aeaeb2; --cyan: #0a84ff; --red: #ff453a; --green: #32d74b; --shadow-light: #3a3a3c; --shadow-dark: #1c1c1e; --input-bg: #2c2c2e; --btn-bg: #2c2c2e; }
+        [data-theme="neon"] { --bg: #0f0f13; --card: #0f0f13; --text: #00f2ff; --subtext: #747494; --cyan: #ff00c1; --red: #ff003c; --green: #00ffaa; --shadow-light: rgba(0, 242, 255, 0.2); --shadow-dark: rgba(0, 0, 0, 0.8); --input-bg: #15151a; --btn-bg: #15151a; }
+
+        body { background-color: var(--bg); color: var(--text); font-family: var(--font-body); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.5s ease, color 0.5s ease; min-height: 100vh; }
+        .container { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 20px; z-index: 5;}
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; }
+        .header-title { color: var(--cyan); letter-spacing: 2px; margin: 0; font-family: var(--font-head); font-weight: 900;}
+        .header-title span { color: var(--text); }
+        .top-controls { display: flex; gap: 15px; }
+
+        .btn-home {
+            background: var(--btn-bg); border: none; color: var(--cyan); padding: 12px 20px; border-radius: 12px;
+            text-decoration: none; font-weight: 900; text-transform: uppercase; font-size: 0.8rem;
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            font-family: var(--font-head);
+        }
+        .btn-home:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: scale(0.95); }
+
+        .card { 
+            background: var(--card); border-radius: 20px; padding: 30px; border: none;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+            transition: 0.5s;
+        }
+
+        .search-section { display: flex; gap: 15px; margin-bottom: 25px; }
+        .search-input { 
+            flex-grow: 1; padding: 15px; border-radius: 12px; outline: none; font-weight: 700;
+            background: var(--input-bg); border: none; color: var(--text); font-family: var(--font-body);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            transition: 0.3s;
+        }
+        .search-input:focus { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); }
+
+        .btn-update { 
+            background: var(--btn-bg); border: none; padding: 15px 30px; border-radius: 12px; 
+            font-weight: 900; cursor: pointer; color: var(--cyan); font-family: var(--font-head);
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); transition: 0.3s;
+        }
+        .btn-update:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); transform: scale(0.95); }
+
+        #search-results { 
+            display: none; margin-bottom: 25px; max-height: 200px; overflow-y: auto; 
+            background: var(--input-bg); border-radius: 12px; padding: 15px; border: none;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        .user-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s;}
+        .user-item.highlight { border: 1px solid var(--green); color: var(--green); background: rgba(0,255,136,0.05); }
+        .user-item.error-list { border: 1px solid var(--red); color: var(--red); background: rgba(255,75,43,0.05); }
+
+        .edit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.75rem; color: var(--subtext); text-transform: uppercase; font-weight: 900; font-family: var(--font-head); margin-left: 5px;}
+        .form-group input { 
+            padding: 15px; border-radius: 10px; font-weight: 700;
+            background: var(--input-bg); border: none; color: var(--text);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            outline: none; transition: 0.3s;
+        }
+        .form-group input:focus { box-shadow: inset 1px 1px 3px var(--shadow-dark), inset -1px -1px 3px var(--shadow-light); }
+
+        /* WINDOWS EXPLORER (CON MAPPATURA DATI REALI) */
+        #vault-container { display: none; width: 100%; margin-top: 15px; }
+        .window-explorer { 
+            background: var(--win-bg); color: var(--win-text); border-radius: 12px; border: none; 
+            box-shadow: 15px 15px 40px rgba(0,0,0,0.4); overflow: hidden; display: flex; flex-direction: column; position: relative; 
+        }
+        
+        .win-header { background: #f3f3f3; padding: 12px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--win-border); align-items: center; }
+        
+        .win-nav-bar { background: #ffffff; padding: 8px 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; }
+        .nav-arrow { font-size: 20px; cursor: pointer; color: #555; padding: 5px; border-radius: 50%; transition: 0.2s; user-select: none; }
+        .nav-arrow:hover { background: #eee; }
+        .vault-search-box { flex-grow: 1; display: flex; align-items: center; background: #f1f1f1; border: 1px solid #ccc; border-radius: 6px; padding: 6px 12px; }
+        .vault-search-box input { border: none; background: transparent; width: 100%; outline: none; font-size: 13px; color: #333; font-weight: 600;}
+
+        .explorer-content { padding: 25px; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; min-height: 300px; max-height: 500px; overflow-y: auto; align-content: start; position: relative; }
+
+        .flash-effect { animation: flashZoom 0.4s ease-out; }
+        @keyframes flashZoom {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(2.5); background: white; }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        .item { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px; border-radius: 5px; cursor: grab; border: 1px solid transparent; user-select: none; }
+        .item:active { cursor: grabbing; }
+        .item:hover { background: var(--win-hover); border: 1px solid #99d1ff; }
+        .item.selected { background: var(--win-select); border: 1px solid #66b2ff; }
+        .item-icon { font-size: 45px; margin-bottom: 5px; pointer-events: none; }
+        .item-name { font-size: 12px; color: #333; font-weight: 600; pointer-events: none; word-wrap: break-word;}
+
+        #context-menu { display: none; position: fixed; background: #ffffff; border: 1px solid #ababab; box-shadow: 3px 3px 10px rgba(0,0,0,0.2); padding: 5px 0; z-index: 9999; min-width: 180px; border-radius: 4px; }
+        .menu-item { padding: 10px 20px; font-size: 13px; cursor: pointer; color: #333; font-weight: 500;}
+        .menu-item:hover { background: #0078d7; color: white; }
+        .menu-sep { height: 1px; background: #e0e0e0; margin: 4px 0; }
+
+        @media (max-width: 768px) { .edit-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body data-theme="apple">
+
+<div class="container">
+    <div class="header-top">
+        <h2 class="header-title">SENTINEL <span>EXPLORER</span></h2>
+        <div class="top-controls">
+            <a href="admin_panel.html" class="btn-home">⬅ ADMIN</a>
+            <div class="btn-home" onclick="toggleTheme()">[ STILE ]</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="search-section">
+            <input type="text" id="searchInput" class="search-input" placeholder="Cerca ID CASO REALE sul NAS (es. Alpha)..." onkeyup="if(event.key==='Enter') performSearch()">
+            <button class="btn-update" onclick="performSearch()">AVVIA RICERCA NAS</button>
+        </div>
+        <div id="search-results"></div>
+        
+        <div class="edit-grid">
+            <div class="form-group"><label>ID Caso</label><input type="text" id="res-id" readonly style="color:var(--cyan)"></div>
+            <div class="form-group"><label>Nome</label><input type="text" id="res-nome"></div>
+            <div class="form-group"><label>Cognome</label><input type="text" id="res-cognome"></div>
+            <div class="form-group"><label>Email</label><input type="text" id="res-email"></div>
+            <div class="form-group"><label>Telefono</label><input type="text" id="res-tel"></div>
+            <div class="form-group"><label>Indirizzo</label><input type="text" id="res-addr"></div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; margin-top:30px;">
+            <button class="btn-update" onclick="salvaModificheReali()">AGGIORNA RECORD SUL NAS</button>
+        </div>
+    </div>
+
+    <div id="vault-container">
+        <div class="window-explorer">
+            <div class="win-header">
+                <div id="vault-path" style="font-size: 13px; font-weight: 700;">📁 KING-Synology > Vault</div>
+                <div style="font-weight: 900; color: #999; cursor: pointer; font-size: 16px;" onclick="document.getElementById('vault-container').style.display='none'">✕</div>
+            </div>
+            
+            <div class="win-nav-bar">
+                <span class="nav-arrow" onclick="alert('Indietro...')">←</span>
+                <span class="nav-arrow" onclick="alert('Avanti...')">→</span>
+                <div class="vault-search-box">
+                    <span>🔍</span>
+                    <input type="text" id="vaultSearch" placeholder="Cerca nel Vault..." onkeyup="filterVault()">
+                </div>
+            </div>
+
+            <div class="explorer-content" id="vault-files" oncontextmenu="handleEmptyCtx(event)"></div>
+        </div>
+    </div>
+</div>
+
+<div id="context-menu">
+    <div class="menu-item" onclick="createNewFolder()">Nuova cartella</div>
+    <div class="menu-item" onclick="deleteItem()" style="color:red">Elimina (NAS)</div>
+    <div class="menu-item" onclick="renameItem()">Rinomina</div>
+    <div class="menu-sep"></div>
+    <div class="menu-item">Scarica File</div>
+</div>
+
+<script>
+    /* === GESTIONE TEMI 3D === */
+    function toggleTheme() {
+        const themes = ['apple', 'jean_dark', 'jean_grey', 'ghost', 'silver', 'stealth', 'neon'];
+        let current = document.body.getAttribute('data-theme') || 'apple';
+        let next = themes[(themes.indexOf(current) + 1) % themes.length];
+        document.body.setAttribute('data-theme', next);
+    }
+
+    /* === CONNESSIONE AL DATABASE REALE NAS === */
+    let utentiReali = [];
+    let fileCorrenti = [];
+
+    // All'avvio, chiediamo al NAS la lista di tutti i casi
+    document.addEventListener("DOMContentLoaded", () => {
+        caricaUtentiDalNAS();
+    });
+
+    async function caricaUtentiDalNAS() {
+        try {
+            const response = await fetch('get_casi.php');
+            const data = await response.json();
+            utentiReali = data;
+        } catch (error) {
+            console.warn("Il file get_casi.php non è stato trovato sul server. Carica il file per abilitare l'autocompletamento.");
+        }
+    }
+
+    function performSearch() {
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        const resultsDiv = document.getElementById('search-results');
+        resultsDiv.innerHTML = ''; resultsDiv.style.display = 'block';
+        if (!query) { resultsDiv.style.display = 'none'; return; }
+
+        let filtrati = utentiReali.filter(u => (u.id && u.id.toLowerCase().includes(query)) || (u.nome && u.nome.toLowerCase().includes(query)));
+        
+        if(filtrati.length === 0) {
+            resultsDiv.innerHTML = `<div class="user-item error-list"><strong>Nessun caso trovato sul NAS per "${query}"</strong><br><small>Digita il nome esatto o verifica sul server.</small></div>`;
+            return;
+        }
+
+        filtrati.forEach(u => {
+            const div = document.createElement('div');
+            div.className = `user-item highlight`;
+            div.innerHTML = `<strong>CASO_${u.id}</strong> - ${u.nome} ${u.cognome}`;
+            div.onclick = () => openCase(u);
+            resultsDiv.appendChild(div);
+        });
+    }
+
+    // Apre il caso e recupera fisicamente i file usando esplora_vault.php
+    async function openCase(u) {
+        document.getElementById('res-id').value = u.id;
+        document.getElementById('res-nome').value = u.nome;
+        document.getElementById('res-cognome').value = u.cognome;
+        document.getElementById('res-email').value = u.email;
+        document.getElementById('res-tel').value = u.tel;
+        document.getElementById('res-addr').value = u.addr;
+        
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('vault-container').style.display = 'block';
+        
+        document.getElementById('vault-path').innerText = `📁 KING-Synology > Vault > CASO_${u.id}`;
+        const content = document.getElementById('vault-files');
+        content.innerHTML = `<p style="grid-column: span 5; text-align:center; color: #555;">Caricamento file dal NAS in corso...</p>`;
+
+        try {
+            // Chiamata all'API esplora_vault.php che abbiamo già per database.html
+            const response = await fetch('esplora_vault.php?caso=CASO_' + encodeURIComponent(u.id));
+            const serverData = await response.json();
+            
+            if(serverData.status === 'error') {
+                content.innerHTML = `<p style="grid-column: span 5; text-align:center; color: red;">${serverData.msg}</p>`;
+                return;
+            }
+
+            fileCorrenti = serverData.files || [];
+            renderFilesExplorer(fileCorrenti);
+
+        } catch(e) {
+            content.innerHTML = `<p style="grid-column: span 5; text-align:center; color: red;">Errore di connessione al Vault (esplora_vault.php mancante).</p>`;
+        }
+    }
+
+    function renderFilesExplorer(files) {
+        const content = document.getElementById('vault-files');
+        content.innerHTML = '';
+        content.classList.add('flash-effect');
+
+        if(files.length === 0) {
+            content.innerHTML = `<p style="grid-column: span 5; text-align:center; color: #555;">Nessun file trovato nel Vault.</p>`;
+        } else {
+            files.forEach(f => {
+                let icon = '📄';
+                const ext = f.name.split('.').pop().toLowerCase();
+                
+                if(f.type === 'video' || ext === 'mp4') icon = '🎬';
+                else if(f.type === 'foto' || ext === 'jpg' || ext === 'png') icon = '📸';
+                else if(f.type === 'audio' || ext === 'webm' || ext === 'mp3') icon = '🎵';
+                else if(ext === 'doc' || ext === 'txt') icon = '📝';
+
+                content.innerHTML += `
+                    <div class="item" draggable="true" title="${f.folder}" oncontextmenu="handleItemCtx(event, this)">
+                        <span class="item-icon">${icon}</span>
+                        <span class="item-name">${f.name}</span>
+                    </div>
+                `;
+            });
+        }
+        
+        initFiles();
+        setTimeout(() => content.classList.remove('flash-effect'), 400);
+    }
+
+    function initFiles() {
+        const items = document.querySelectorAll('.item');
+        items.forEach(item => {
+            item.onclick = () => {
+                items.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+            };
+            item.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text', ''); window.dragged = item; item.style.opacity = '0.5'; });
+            item.addEventListener('dragend', () => { item.style.opacity = '1'; items.forEach(i => i.classList.remove('drag-over')); });
+        });
+    }
+
+    function filterVault() {
+        const q = document.getElementById('vaultSearch').value.toLowerCase();
+        document.querySelectorAll('.item').forEach(it => {
+            it.style.display = it.querySelector('.item-name').innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+        });
+    }
+
+    // MENU CONTESTUALE
+    function handleItemCtx(e, el) {
+        e.preventDefault();
+        const menu = document.getElementById('context-menu');
+        window.selected = el;
+        menu.style.display = 'block';
+        
+        let x = e.clientX; let y = e.clientY;
+        if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth;
+        if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight;
+        
+        menu.style.left = x + "px";
+        menu.style.top = y + "px";
+        return false;
+    }
+
+    function handleEmptyCtx(e) {
+        e.preventDefault();
+        const menu = document.getElementById('context-menu');
+        menu.style.display = 'block';
+        
+        let x = e.clientX; let y = e.clientY;
+        if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth;
+        if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight;
+        
+        menu.style.left = x + "px";
+        menu.style.top = y + "px";
+        window.selected = null;
+    }
+
+    window.onclick = (e) => {
+        if (!e.target.closest('#context-menu') && document.getElementById('context-menu')) {
+            document.getElementById('context-menu').style.display = 'none';
+        }
+    };
+
+    function deleteItem() { if(window.selected && confirm("Eliminare fisicamente il file dal NAS? (Richiede update_caso.php)")) { window.selected.remove(); alert("Rimozione simulata. Inserisci il file di backend per la rimozione reale."); } }
+    function renameItem() { if(window.selected) { let n = prompt("Nuovo nome file:"); if(n) window.selected.querySelector('.item-name').innerText = n; }}
+    function createNewFolder() { alert("Creazione cartella sul server NAS..."); }
+
+    // AGGIORNAMENTO DATI REALI (Richiede il file update_caso.php)
+    async function salvaModificheReali() {
+        const payload = {
+            id: document.getElementById('res-id').value,
+            nome: document.getElementById('res-nome').value,
+            cognome: document.getElementById('res-cognome').value,
+            email: document.getElementById('res-email').value,
+            tel: document.getElementById('res-tel').value,
+            addr: document.getElementById('res-addr').value
+        };
+
+        if(!payload.id) return alert("Nessun caso selezionato.");
+
+        try {
+            const res = await fetch('update_caso.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.status === 'success') {
+                alert("DATI AGGIORNATI CON SUCCESSO SUL NAS!");
+                caricaUtentiDalNAS(); // Ricarica in cache
+            } else {
+                alert(data.msg || "Errore durante l'aggiornamento.");
+            }
+        } catch(e) {
+            alert("Salvato in locale. Carica il file update_caso.php sul server per salvare le modifiche su NAS.");
+        }
+    }
+</script>
+
+</body>
+</html>

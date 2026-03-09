@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentineL Tracker - 3D Pro Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;600;700;900&family=VT323&display=swap');
+        
+        :root {
+            --radius: 15px; 
+            --font-head: 'Orbitron', sans-serif; 
+            --font-body: 'Inter', sans-serif;
+        }
+
+        [data-theme="apple"] { 
+            --bg: #f0f0f3; --card: #f0f0f3; --text: #1d1d1f; --subtext: #86868b;
+            --cyan: #0071e3; --red: #ff3b30; --green: #34c759;
+            --shadow-light: #ffffff; --shadow-dark: #aeaec0;
+            --input-bg: #f0f0f3; --btn-bg: #f0f0f3;
+        }
+
+        [data-theme="jean_dark"] {
+            --bg: #0f0a05; --card: #0f0a05; --text: #f39c12; --subtext: #8a631c;
+            --cyan: #f1c40f; --red: #e74c3c; --green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.2); --shadow-dark: rgba(0, 0, 0, 0.9);
+            --input-bg: #170f08; --btn-bg: #170f08;
+        }
+
+        [data-theme="jean_grey"] {
+            --bg: #3b3b3d; --card: #3b3b3d; --text: #f39c12; --subtext: #a0a0a5;
+            --cyan: #f1c40f; --red: #e74c3c; --green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.25); --shadow-dark: rgba(0, 0, 0, 0.7);
+            --input-bg: #323234; --btn-bg: #323234;
+        }
+
+        [data-theme="ghost"] {
+            --bg: #f8f9fa; --card: #f8f9fa; --text: #495057; --subtext: #adb5bd;
+            --cyan: #6c757d; --red: #d90429; --green: #2ecc71;
+            --shadow-light: #ffffff; --shadow-dark: #dee2e6;
+            --input-bg: #f8f9fa; --btn-bg: #f8f9fa;
+        }
+
+        [data-theme="silver"] {
+            --bg: #e0e5ec; --card: #e0e5ec; --text: #2d3436; --subtext: #636e72;
+            --cyan: #0984e3; --red: #d63031; --green: #00b894;
+            --shadow-light: #ffffff; --shadow-dark: #a3b1c6;
+            --input-bg: #e0e5ec; --btn-bg: #e0e5ec;
+        }
+
+        [data-theme="stealth"] {
+            --bg: #2c2c2e; --card: #2c2c2e; --text: #f2f2f7; --subtext: #aeaeb2;
+            --cyan: #0a84ff; --red: #ff453a; --green: #32d74b;
+            --shadow-light: #3a3a3c; --shadow-dark: #1c1c1e;
+            --input-bg: #2c2c2e; --btn-bg: #2c2c2e;
+        }
+
+        [data-theme="neon"] {
+            --bg: #0f0f13; --card: #0f0f13; --text: #00f2ff; --subtext: #747494;
+            --cyan: #ff00c1; --red: #ff003c; --green: #00ffaa;
+            --shadow-light: rgba(0, 242, 255, 0.2); --shadow-dark: rgba(0, 0, 0, 0.8);
+            --input-bg: #15151a; --btn-bg: #15151a;
+        }
+
+        body { 
+            background-color: var(--bg); color: var(--text); font-family: var(--font-body); 
+            margin: 0; padding: 20px; display: flex; justify-content: center; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.5s ease;
+        }
+
+        .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; grid-gap: 25px; max-width: 1300px; width: 100%; }
+        
+        .card { 
+            background: var(--card); border-radius: 20px; padding: 25px; border: none;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); 
+            position: relative; display: flex; flex-direction: column; transition: 0.5s;
+        }
+
+        .button-bar { grid-column: 2; display: flex; justify-content: space-between; gap: 15px; padding: 10px 0; }
+        .nav-btn { 
+            flex: 1; padding: 16px; border-radius: 15px; background: var(--btn-bg); border: none; 
+            color: var(--text); font-weight: 700; font-family: var(--font-body); font-size: 13px; cursor: pointer; text-align: center; 
+            transition: 0.3s; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+        .nav-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light); transform: scale(0.98); }
+        .nav-btn:hover { color: var(--cyan); }
+
+        .status-block { cursor: pointer; padding: 15px; border-radius: 15px; transition: 0.3s; width: 100px; text-align: center; background: var(--btn-bg); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);}
+        .op-dropdown {
+            position: absolute; top: 120px; left: 50%; transform: translateX(-50%) translateY(-15px);
+            background: var(--card); border: none; border-radius: 15px; padding: 15px;
+            width: 260px; max-height: 300px; overflow-y: auto; z-index: 500; opacity: 0;
+            pointer-events: none; transition: 0.4s;
+            box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light);
+        }
+        .op-dropdown.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .op-drop-item { padding: 12px; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--shadow-dark); display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text); transition: 0.2s;}
+        .op-drop-item:last-child { border-bottom: none; }
+        .op-drop-item:hover { color: var(--cyan); padding-left: 15px;}
+
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); z-index: 999; }
+        .modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: var(--card); border: none; border-radius: 25px; padding: 40px; z-index: 1000; 
+            width: 500px; max-width: 90%; max-height: 85vh; overflow-y: auto; 
+            box-shadow: 20px 20px 40px var(--shadow-dark), -20px -20px 40px var(--shadow-light); 
+        }
+        .modal.show { display: block; animation: modalIn 0.5s forwards; }
+        @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -55%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; color: var(--subtext); margin-bottom: 8px; text-transform: uppercase; font-weight: 900; font-family: var(--font-head); letter-spacing: 0.5px;}
+        .form-group input, .form-group select { 
+            width: 100%; padding: 15px; background: var(--input-bg); border: none; 
+            border-radius: 12px; color: var(--text); box-sizing: border-box; font-size: 14px; font-weight: 700; transition: 0.3s;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; color: var(--cyan); box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); }
+        
+        .file-zone { 
+            background: var(--input-bg); padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; 
+            color: var(--subtext); font-weight: 700; box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        .file-zone:hover { color: var(--cyan); box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); }
+        
+        .progress-container { display: none; margin-top: 15px; background: var(--input-bg); height: 10px; border-radius: 10px; overflow: hidden; box-shadow: inset 2px 2px 5px var(--shadow-dark); }
+        .progress-bar { width: 0%; height: 100%; background: var(--cyan); transition: width 0.2s; box-shadow: 0 0 10px var(--cyan); }
+        #status-text { font-size: 12px; color: var(--cyan); margin-top: 8px; text-align: center; display: block; font-weight: 900; }
+
+        .state-on { color: var(--green) !important; box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light) !important; }
+        .state-off { color: var(--red) !important; }
+
+        .map-wrapper { position: relative; width: 100%; height: 380px; flex-shrink: 0; border-radius: 15px 15px 0 0; overflow: hidden; box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); margin-bottom: 2px;}
+        #operatorMap { width: 100%; height: 100%; background: var(--input-bg); }
+        
+        .btn-google { 
+            position: absolute; bottom: 15px; right: 15px; z-index: 1000; background: var(--btn-bg); color: var(--text); border: none; padding: 10px 16px; border-radius: 12px; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; 
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.3); transition: 0.3s; 
+        }
+        .btn-google:active { box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5); transform: scale(0.95); }
+
+        .top-header-info { padding: 20px; display:flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--btn-bg); border-radius: 15px 15px 0 0; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); z-index: 2;}
+        .gps-info-bar { background: var(--btn-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-family: 'VT323', monospace; font-size: 16px; color: var(--text); flex-shrink: 0; flex-wrap: wrap; gap: 10px; z-index: 2;}
+        
+        #streetViewContainer { flex-grow: 1; min-height: 250px; background: var(--input-bg); position: relative; border-radius: 0 0 15px 15px; overflow: hidden; box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); }
+        #svIframe { width: 100%; height: 100%; border: 0; transition: opacity 0.3s ease; }
+
+        .pulse-dot { width: 14px; height: 14px; background-color: var(--green); border-radius: 50%; box-shadow: 0 0 15px var(--green); animation: pulse 1.5s infinite; border: 2px solid var(--card);}
+        @keyframes pulse { 0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.7); } 70% { transform: scale(1.5); box-shadow: 0 0 0 15px rgba(52, 199, 89, 0); } 100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); } }
+
+        .val-big { font-size: 42px; font-weight: 900; font-family: var(--font-head); }
+        h3 { color: var(--text); font-size: 13px; font-weight: 900; font-family: var(--font-head); text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 1px;}
+        .dot-online { width: 12px; height: 12px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .dot-offline { width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); }
+        
+        #opListContent::-webkit-scrollbar { width: 6px; }
+        #opListContent::-webkit-scrollbar-thumb { background: var(--shadow-dark); border-radius: 6px; }
+
+        /* TASTI LATERALI ADMIN (HOME E ESCI) */
+        .admin-actions { display: flex; flex-direction: column; gap: 8px; }
+        .admin-action-btn { padding: 6px 16px; margin: 0; font-size: 11px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; transition: 0.2s; background: var(--btn-bg); box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); }
+        .admin-action-btn:active { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); transform: scale(0.95); }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; margin-top: 30px;}
+            .button-bar { flex-wrap: wrap; }
+            .nav-btn { flex: 1 1 45%; margin-bottom: 5px; }
+            .card { height: auto !important; }
+            .map-wrapper { height: 300px; }
+        }
+    </style>
+</head>
+<body data-theme="apple">
+
+<div id="loginOverlay">
+    <div class="card" style="width: 400px; max-width: 90%; padding: 50px; text-align: center;">
+        <h2 style="color: var(--text); font-family: var(--font-head); margin-top: 0; margin-bottom: 30px; font-size: 24px; font-weight: 900;">AREA RISERVATA</h2>
+        
+        <div class="form-group" style="text-align: left;">
+            <label>ID Admin</label>
+            <input type="text" id="loginUser" placeholder="Inserisci il tuo ID">
+        </div>
+        <div class="form-group" style="text-align: left; margin-bottom: 30px;">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="••••••••">
+        </div>
+        
+        <button id="btnStandardLogin" class="nav-btn" style="width: 100%; color: var(--cyan); margin-bottom: 25px;" onclick="eseguiLogin()">ACCEDI AL PANNELLO</button>
+
+        <div style="color: var(--subtext); font-size: 11px; font-weight: 900; font-family: var(--font-head); margin-bottom: 20px;">OPPURE</div>
+
+        <button id="btnFoxLogin" class="nav-btn" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;" onclick="bypassAuth()">
+            <img src="foxshield-logo2.jpg" alt="Logo" style="width: 20px; height: 20px; border-radius: 4px; object-fit: cover;">
+            Continua con FoxShield
+        </button>
+    </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+<div class="dashboard-grid">
+    <div style="display:flex; flex-direction:column; gap:25px;">
+        <div class="card" id="statusCard">
+            <h3>Online Status</h3>
+            <div style="display:flex; justify-content: space-around; align-items: center; margin-top: 10px;">
+                <div class="status-block" onclick="toggleDropdown('online', event)">
+                    <div class="val-big" style="color:var(--green)">11</div>
+                    <div style="color:var(--text); font-size: 12px; font-weight: 700;">Online</div>
+                </div>
+                <div class="status-block" onclick="toggleDropdown('offline', event)">
+                    <div class="val-big" style="color:var(--red)">30</div>
+                    <div style="color:var(--text); font-size: 12px; font-weight: 700;">Offline</div>
+                </div>
+            </div>
+            <div id="opDropdown" class="op-dropdown"></div>
+        </div>
+        
+        <div class="card"><h3>Traffico Settimanale</h3><canvas id="chartStats" height="150"></canvas></div>
+        
+        <div class="card" style="flex-direction: row; align-items: center; justify-content: space-around; min-height:120px;">
+            <div style="width:80px;"><canvas id="chartTemp"></canvas></div>
+            <div style="text-align:center;"><div class="val-big" style="color:var(--red)" id="tempVal">45°C</div><h3 style="margin-top:5px; margin-bottom:0;">TEMP NAS</h3></div>
+        </div>
+
+        <div class="card" style="min-height: 250px;">
+            <h3>Memoria RAM (Live)</h3>
+            <div style="display:flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; gap: 20px;">
+                <div style="width:140px;"><canvas id="chartRam"></canvas></div>
+                <div style="display:flex; gap:20px; font-size:14px; font-weight:700; color:var(--text);">
+                    <div><span style="color:var(--cyan);">In Uso:</span> <span id="ramUsedText">8.4 GB</span></div>
+                    <div><span style="color:var(--green);">Libera:</span> <span id="ramFreeText">7.6 GB</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:25px;">
+        <div class="button-bar">
+            <button class="nav-btn" onclick="toggleTheme()" style="color: var(--accent-1); font-family: var(--font-head); font-weight: 900;">[ STILE ]</button>
+            
+            <button class="nav-btn" onclick="window.location.href='edit_palnel.html'">Pannello di Controllo</button>
+            
+            <button class="nav-btn" onclick="window.location.href='database.html'">Database</button>
+            <button class="nav-btn" onclick="openModal('opModal')">Operatori</button>
+            <button class="nav-btn" onclick="openModal('userFormModal')">Aggiungi Utente</button>
+        </div>
+
+        <div class="card" style="padding: 0; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; background: transparent; box-shadow: none;">
+            <div class="top-header-info">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <h3 style="margin:0; display:flex; align-items:center; flex-wrap:wrap; gap:10px; font-size: 15px;">
+                        SentineL Fleet Tracking 
+                        <span id="trackingTarget" style="color:var(--cyan); font-weight:900;"></span>
+                    </h3>
+                    <span style="color:var(--subtext); font-size: 11px; font-weight: 900; font-family: var(--font-head);">
+                        <span style="color:var(--green)">●</span> ADMIN LOGGED: <span id="adminTimer" style="color:var(--text)">00:00:00</span>
+                    </span>
+                </div>
+                
+                <div class="admin-actions">
+                    <button class="admin-action-btn" style="color: var(--green);" onclick="window.location.href='index.html'">Home</button>
+                    <button class="admin-action-btn" style="color: var(--red);" onclick="esciAdmin()">Esci</button>
+                </div>
+            </div>
+            
+            <div class="map-wrapper">
+                <div id="operatorMap"></div>
+                <button class="btn-google" id="mapToggleBtn" onclick="toggleMapType()">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Google Maps
+                </button>
+            </div>
+            
+            <div class="gps-info-bar">
+                <div id="gps-coords">LAT: --.---- | LNG: --.----</div>
+                <div style="display:flex; align-items:center; gap: 15px; flex-wrap: wrap;">
+                    <div id="gps-address" style="color:var(--cyan); font-weight:700;">VIA: (Sector --)</div>
+                    <button id="btnPlayStop" class="nav-btn" style="padding: 6px 14px; margin: 0; font-size: 11px; color: var(--red); display: none; min-width: 80px; border-radius: 10px;" onclick="toggleTracking()">■ Stop</button>
+                    <button class="nav-btn" style="padding: 6px 14px; margin: 0; font-size: 11px; color: var(--cyan); border-radius: 10px;" onclick="syncStreetView()">Sync 360°</button>
+                </div>
+                <div id="gps-speed">0 KM/H</div>
+            </div>
+
+            <div id="streetViewContainer">
+                <iframe id="svIframe" src="about:blank"></iframe>
+                <div id="svPlaceholder" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--subtext); font-size:13px; text-transform:uppercase; font-weight:900; font-family:var(--font-head); letter-spacing:1px; text-align:center;">In attesa di coordinate GPS...</div>
+                <div id="svUpdating" style="position:absolute; top:15px; right:15px; background:var(--btn-bg); padding: 8px 12px; border-radius: 10px; color:var(--cyan); font-size:11px; font-weight:900; display:none; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); font-family:var(--font-head);">↻ Caricamento 360°...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="userFormModal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <strong style="color:var(--text); font-size: 22px; font-family:var(--font-head); font-weight:900;">Nuovo Utente</strong>
+        <span style="cursor:pointer; color:var(--subtext); font-size:28px; line-height: 1;" onclick="closeAllModals()">×</span>
+    </div>
+    <form id="uploadForm">
+        <div class="form-group"><label>ID Caso</label><input type="text" id="up-id" placeholder="Es. CASO_Gianni" required></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="form-group"><label>Nome</label><input type="text" id="up-nome" required></div>
+            <div class="form-group"><label>Cognome</label><input type="text" id="up-cognome" required></div>
+        </div>
+        <div class="form-group"><label>Indirizzo</label><input type="text" id="up-indirizzo" placeholder="Via, Città..."></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="form-group"><label>Numeri di Telefono</label><input type="tel" id="up-tel"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="up-email" required></div>
+        </div>
+        <div class="form-group">
+            <label>Allegati (Max 10 file - Tot 1GB)</label>
+            <div class="file-zone" onclick="document.getElementById('fileInput').click()">
+                <span id="fileName">Trascina i file o clicca per caricare</span>
+                <input type="file" id="fileInput" multiple style="display:none" onchange="validateFiles(this)">
+            </div>
+        </div>
+        <div class="progress-container" id="progCont"><div class="progress-bar" id="pBar"></div></div>
+        <span id="status-text"></span>
+        <button type="button" class="nav-btn" style="width:100%; margin-top:25px; color:var(--cyan);" onclick="uploadToNAS()">SALVA PROFILO</button>
+    </form>
+</div>
+
+<div class="modal" id="opModal" style="max-width: 600px; width: 100%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 1px solid var(--shadow-dark); padding-bottom: 20px;">
+        <strong style="color:var(--text); font-size: 22px; font-family:var(--font-head); font-weight:900;">Gestione Operatori</strong>
+        <span style="cursor:pointer; color:var(--subtext); font-size:28px; line-height: 1;" onclick="closeAllModals()">×</span>
+    </div>
+    <div id="opListContent" style="max-height: 400px; overflow-y: auto; padding-right: 15px;"></div>
+</div>
+
+<div class="modal" id="editOpModal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 1px solid var(--shadow-dark); padding-bottom: 20px;">
+        <strong style="color:var(--text); font-size: 22px; font-family:var(--font-head); font-weight:900;">Scheda Operatore</strong>
+        <span style="cursor:pointer; color:var(--subtext); font-size:28px; line-height: 1;" onclick="closeEditModal()">×</span>
+    </div>
+    <form id="editOpForm">
+        <div class="form-group">
+            <label>Nome in Codice / ID</label>
+            <input type="text" id="editOpName" readonly style="color: var(--cyan); font-weight:900; text-align: center;">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="form-group"><label>Nome</label><input type="text" placeholder="Nome"></div>
+            <div class="form-group"><label>Cognome</label><input type="text" placeholder="Cognome"></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="form-group"><label>Numero di Cellulare</label><input type="tel" placeholder="+39 ..."></div>
+            <div class="form-group"><label>Email</label><input type="email" placeholder="operatore@sentinel.org"></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="form-group">
+                <label>Ruolo</label>
+                <input type="text" placeholder="Es. Agente Speciale, Analista...">
+            </div>
+            <div class="form-group">
+                <label>Riepilogo / Opzione</label>
+                <select style="appearance: none; cursor: pointer; border-right: 12px solid transparent;">
+                    <option>Sorveglianza Attiva</option>
+                    <option>Ricerca Intel</option>
+                    <option>Infiltrazione</option>
+                    <option>Standby Operativo</option>
+                </select>
+            </div>
+        </div>
+        <span id="py-status" style="font-size: 12px; color: var(--green); display:none; margin-top: 5px; font-weight:700; text-align: center;">✓ Dati criptati e salvati nel DB</span>
+        <div style="display:flex; gap:20px; margin-top:30px;">
+            <button type="button" class="nav-btn" style="width:100%; color:var(--text);" onclick="closeEditModal()">Annulla</button>
+            <button type="button" class="nav-btn" style="width:100%; color:var(--cyan);" onclick="simulatePythonSave(event)">Salva nel DB</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleTheme() {
+        const themes = ['apple', 'jean_dark', 'jean_grey', 'ghost', 'silver', 'stealth', 'neon'];
+        let current = document.body.getAttribute('data-theme') || 'apple';
+        let next = themes[(themes.indexOf(current) + 1) % themes.length];
+        document.body.setAttribute('data-theme', next);
+        updateChartColors();
+    }
+
+    function updateChartColors() {
+        setTimeout(() => {
+            const style = getComputedStyle(document.body);
+            const cyan = style.getPropertyValue('--cyan').trim();
+            const red = style.getPropertyValue('--red').trim();
+            const green = style.getPropertyValue('--green').trim();
+            
+            if(window.chartTemp) {
+                window.chartTemp.data.datasets[0].backgroundColor = [red, 'transparent'];
+                window.chartTemp.update('none');
+            }
+            if(window.chartRam) {
+                window.chartRam.data.datasets[0].backgroundColor = [cyan, green];
+                window.chartRam.update('none');
+            }
+            if(window.chartStats) {
+                window.chartStats.data.datasets[0].backgroundColor = cyan;
+                window.chartStats.update('none');
+            }
+        }, 50); 
+    }
+
+    const safeStorage = {
+        setItem: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
+        getItem: function(k) { try { return localStorage.getItem(k); } catch(e) { return null; } },
+        removeItem: function(k) { try { localStorage.removeItem(k); } catch(e) {} }
+    };
+
+    let loginTime = null;
+    let adminTimerInterval = null;
+
+    window.onload = () => {
+        if(safeStorage.getItem('adminLoggedIn') === 'true' || safeStorage.getItem('foxshield_logged_in') === 'true') {
+            const savedTime = safeStorage.getItem('loginTime');
+            if(savedTime) { loginTime = new Date(parseInt(savedTime)); } 
+            else { loginTime = new Date(); safeStorage.setItem('loginTime', loginTime.getTime()); }
+            
+            document.getElementById('loginOverlay').style.display = 'none';
+            startAdminSessionInterval();
+            resumeTracking();
+        } else {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
+        updateChartColors();
+    };
+
+    async function eseguiLogin() {
+        const u = document.getElementById('loginUser').value;
+        const p = document.getElementById('loginPass').value;
+        const btn = document.getElementById('btnStandardLogin');
+        
+        btn.innerText = "Autenticazione in corso...";
+        
+        try {
+            const response = await fetch('auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'login', username: u, password: p })
+            });
+            const res = await response.json();
+            
+            if (res.status === 'success') {
+                safeStorage.setItem('adminLoggedIn', 'true');
+                safeStorage.setItem('foxshield_logged_in', 'true');
+                safeStorage.setItem('foxshield_user', res.username);
+                safeStorage.setItem('foxshield_operator_id', res.operatore);
+                
+                loginTime = new Date();
+                safeStorage.setItem('loginTime', loginTime.getTime());
+
+                document.getElementById('loginOverlay').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('loginOverlay').style.display = 'none'; 
+                    startAdminSessionInterval();
+                    resumeTracking();
+                }, 500);
+            } else { 
+                alert(res.msg); 
+                btn.innerText = "ACCEDI AL PANNELLO";
+            }
+        } catch (e) { 
+            alert("ERRORE DI CONNESSIONE AL DATABASE. Assicurati che auth.php sia sul server."); 
+            btn.innerText = "ACCEDI AL PANNELLO";
+        }
+    }
+
+    function bypassAuth() {
+        safeStorage.setItem('adminLoggedIn', 'true');
+        safeStorage.setItem('foxshield_logged_in', 'true');
+        loginTime = new Date();
+        safeStorage.setItem('loginTime', loginTime.getTime());
+
+        document.getElementById('loginOverlay').style.opacity = '0';
+        setTimeout(() => { 
+            document.getElementById('loginOverlay').style.display = 'none'; 
+            startAdminSessionInterval();
+            resumeTracking();
+        }, 300); 
+    }
+
+    function startAdminSessionInterval() {
+        if(adminTimerInterval) clearInterval(adminTimerInterval);
+        adminTimerInterval = setInterval(() => {
+            let now = new Date();
+            let diff = Math.floor((now - loginTime) / 1000);
+            let h = String(Math.floor(diff / 3600)).padStart(2, '0');
+            let m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+            let s = String(diff % 60).padStart(2, '0');
+            document.getElementById('adminTimer').innerText = `${h}:${m}:${s}`;
+        }, 1000);
+    }
+
+    function esciAdmin() {
+        if(confirm("Sei sicuro di voler terminare la sessione Admin?")) {
+            safeStorage.removeItem('adminLoggedIn');
+            safeStorage.removeItem('foxshield_logged_in');
+            safeStorage.removeItem('loginTime');
+            safeStorage.removeItem('trackedOperator');
+            safeStorage.removeItem('currentLat');
+            safeStorage.removeItem('currentLng');
+            safeStorage.removeItem('isTrackingPaused');
+
+            clearInterval(adminTimerInterval);
+            document.getElementById('adminTimer').innerText = `00:00:00`;
+            
+            const overlay = document.getElementById('loginOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.style.opacity = '1', 10); 
+            
+            document.getElementById('btnStandardLogin').innerText = "ACCEDI AL PANNELLO";
+        }
+    }
+
+    const onlineOps = [
+        {name: "007", lat: 45.46416, lng: 9.18945, via: "Piazzale Duomo"},
+        {name: "Renato", lat: 45.4642, lng: 9.1900, via: "Piazza del Duomo"}, 
+        {name: "Jean.", lat: 45.4750, lng: 9.2100, via: "Corso Buenos Aires"},
+        {name: "Fede", lat: 45.4850, lng: 9.1800, via: "Via Melchiorre Gioia"}, 
+        {name: "Paolone", lat: 45.4500, lng: 9.1500, via: "Via Tortona"},
+        {name: "NIsh", lat: 45.4400, lng: 9.2000, via: "Viale Isonzo"}, 
+        {name: "Stefano Apple", lat: 45.4900, lng: 9.2200, via: "Viale Monza"},
+        {name: "murdacà (ladro)", lat: 45.4300, lng: 9.1700, via: "Via Ripamonti"}, 
+        {name: "Kloe", lat: 45.4200, lng: 9.2100, via: "Via Corvetto"}, 
+        {name: "Pierino", lat: 45.4600, lng: 9.1200, via: "Via Novara"}
+    ];
+    const offlineOps = [];
+    for(let i=1; i<=30; i++) offlineOps.push({name: `Operatore_Offline_${i < 10 ? '0'+i : i}`});
+
+    var map = L.map('operatorMap', { zoomControl: false, attributionControl: false }).setView([45.4642, 9.1900], 13);
+    var lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
+    var googleLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'); 
+    lightLayer.addTo(map); 
+
+    let isGoogle = false;
+    function toggleMapType() {
+        const btn = document.getElementById('mapToggleBtn');
+        if(isGoogle) {
+            map.removeLayer(googleLayer); lightLayer.addTo(map);
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google Maps';
+        } else {
+            map.removeLayer(lightLayer); googleLayer.addTo(map);
+            btn.innerHTML = 'Mappa Vettoriale';
+        }
+        isGoogle = !isGoogle;
+    }
+
+    var marker = null, interval = null;
+    let currentLat = 0, currentLng = 0;
+    const target007Lat = 45.46894, target007Lng = 9.17945;
+    let isTrackingPaused = false;
+
+    function toggleDropdown(type, e) {
+        e.stopPropagation();
+        const drop = document.getElementById('opDropdown');
+        if(drop.classList.contains('show')) { drop.classList.remove('show'); return; }
+        drop.innerHTML = '';
+        const list = type === 'online' ? onlineOps : offlineOps;
+        list.forEach(op => {
+            const item = document.createElement('div');
+            item.className = 'op-drop-item';
+            item.innerHTML = `<div class="${type==='online'?'dot-online':'dot-offline'}"></div><span>${op.name}</span>`;
+            if(type === 'online') item.onclick = () => startPatrol(op);
+            drop.appendChild(item);
+        });
+        drop.classList.add('show');
+    }
+
+    function toggleTracking() {
+        isTrackingPaused = !isTrackingPaused;
+        safeStorage.setItem('isTrackingPaused', isTrackingPaused);
+        const btn = document.getElementById('btnPlayStop');
+        const targetText = document.getElementById('trackingTarget');
+        const opName = safeStorage.getItem('trackedOperator');
+
+        if(isTrackingPaused) {
+            btn.innerHTML = "▶ Play";
+            btn.style.color = "var(--green)";
+            if(opName) targetText.innerText = `- TARGET: ${opName.toUpperCase()} (IN PAUSA)`;
+        } else {
+            btn.innerHTML = "■ Stop";
+            btn.style.color = "var(--red)";
+            if(opName) targetText.innerText = `- TARGET: ${opName.toUpperCase()}`;
+        }
+    }
+
+    function resumeTracking() {
+        const activeOpName = safeStorage.getItem('trackedOperator');
+        if(activeOpName) {
+            const allOps = onlineOps.concat(offlineOps);
+            const activeOp = allOps.find(o => o.name === activeOpName);
+            if(activeOp) {
+                setTimeout(() => startPatrol(activeOp, true), 300);
+            }
+        }
+    }
+
+    function startPatrol(op, isResume = false) {
+        document.getElementById('opDropdown').classList.remove('show');
+        if(marker) map.removeLayer(marker);
+        if(interval) clearInterval(interval);
+        
+        safeStorage.setItem('trackedOperator', op.name);
+        
+        if(!isResume) {
+            isTrackingPaused = false;
+            safeStorage.setItem('isTrackingPaused', 'false');
+        } else {
+            isTrackingPaused = safeStorage.getItem('isTrackingPaused') === 'true';
+        }
+
+        const playBtn = document.getElementById('btnPlayStop');
+        playBtn.style.display = 'flex';
+        
+        if(isTrackingPaused) {
+            playBtn.innerHTML = "▶ Play";
+            playBtn.style.color = "var(--green)"; 
+            document.getElementById('trackingTarget').innerText = `- TARGET: ${op.name.toUpperCase()} (IN PAUSA)`;
+        } else {
+            playBtn.innerHTML = "■ Stop";
+            playBtn.style.color = "var(--red)"; 
+            document.getElementById('trackingTarget').innerText = `- TARGET: ${op.name.toUpperCase()}`;
+        }
+
+        document.getElementById('svPlaceholder').style.display = 'none';
+
+        var icon = L.divIcon({ className: 'p', html: '<div class="pulse-dot"></div>', iconSize: [15,15] });
+        
+        currentLat = op.lat; 
+        currentLng = op.lng;
+
+        if(isResume) {
+            let sLat = parseFloat(safeStorage.getItem('currentLat'));
+            let sLng = parseFloat(safeStorage.getItem('currentLng'));
+            if(!isNaN(sLat) && !isNaN(sLng)) {
+                currentLat = sLat; currentLng = sLng;
+            }
+        } else {
+            safeStorage.setItem('currentLat', currentLat);
+            safeStorage.setItem('currentLng', currentLng);
+        }
+        
+        marker = L.marker([currentLat, currentLng], {icon: icon}).addTo(map);
+        map.flyTo([currentLat, currentLng], 16);
+        
+        syncStreetView();
+
+        const is007 = (op.name === "007");
+
+        interval = setInterval(() => {
+            if(isTrackingPaused) return;
+
+            if (is007) {
+                let latDiff = target007Lat - currentLat;
+                let lngDiff = target007Lng - currentLng;
+                let dist = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+                
+                if (dist > 0.0002) { 
+                    currentLat += (latDiff / dist) * 0.00018; 
+                    currentLng += (lngDiff / dist) * 0.00018;
+                    document.getElementById('gps-address').innerText = `VIA: In transito verso Piazza Castello 13`;
+                } else {
+                    document.getElementById('gps-address').innerText = `VIA: Piazza Castello 13 (DESTINAZIONE RAGGIUNTA)`;
+                }
+                document.getElementById('gps-speed').innerText = `25 KM/H`;
+            } else {
+                currentLat += (Math.random() - 0.45) * 0.0024; 
+                currentLng += (Math.random() - 0.45) * 0.0024;
+                document.getElementById('gps-address').innerText = `VIA: ${op.via} (Sector ${Math.floor(Math.random()*99)+1})`;
+                document.getElementById('gps-speed').innerText = `${Math.floor(Math.random()*15 + 35)} KM/H`;
+            }
+
+            safeStorage.setItem('currentLat', currentLat);
+            safeStorage.setItem('currentLng', currentLng);
+
+            marker.setLatLng([currentLat, currentLng]); 
+            map.panTo([currentLat, currentLng]);
+            document.getElementById('gps-coords').innerText = `LAT: ${currentLat.toFixed(5)} | LNG: ${currentLng.toFixed(5)}`;
+        }, 3000); 
+    }
+
+    window.syncStreetView = function() {
+        if(currentLat === 0 && currentLng === 0) return;
+        map.setView([currentLat, currentLng], 16);
+        const svUpdating = document.getElementById('svUpdating');
+        svUpdating.style.display = 'block'; 
+        const svUrl = `https://maps.google.com/maps?q=&layer=c&cbll=${currentLat},${currentLng}&cbp=11,0,0,0,0&output=svembed`;
+        const iframe = document.getElementById('svIframe');
+        iframe.onload = () => { svUpdating.style.display = 'none'; };
+        iframe.src = svUrl;
+    }
+
+    function openModal(id) { document.getElementById('overlay').style.display = 'block'; document.getElementById(id).classList.add('show'); if(id === 'opModal') renderOpModal(); }
+    function closeAllModals() { document.getElementById('overlay').style.display = 'none'; document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); document.getElementById('progCont').style.display = 'none'; document.getElementById('pBar').style.width = '0%'; document.getElementById('status-text').innerText = ''; selectedFiles = []; document.getElementById('fileName').innerText = "Trascina i file o clicca per caricare"; document.getElementById('py-status').style.display = 'none'; }
+
+    function openEditModal(opName) { document.getElementById('opModal').classList.remove('show'); document.getElementById('editOpName').value = opName.toUpperCase(); document.getElementById('editOpModal').classList.add('show'); }
+    function closeEditModal() { document.getElementById('editOpModal').classList.remove('show'); document.getElementById('opModal').classList.add('show'); document.getElementById('py-status').style.display = 'none'; }
+    function simulatePythonSave(event) { const btn = event.target; btn.innerText = "Salvataggio in corso..."; setTimeout(() => { document.getElementById('py-status').style.display = 'block'; btn.innerText = "Salva nel DB"; setTimeout(closeEditModal, 1500); }, 800); }
+    
+    function toggleBtn(btn, type) { if(btn.classList.contains('state-on')) { btn.classList.remove('state-on'); btn.classList.add('state-off'); btn.innerText = type === 'DB' ? 'DB Off' : 'Offline'; } else { btn.classList.remove('state-off'); btn.classList.add('state-on'); btn.innerText = type === 'DB' ? 'DB On' : 'Attivo'; } }
+
+    function renderOpModal() {
+        const cont = document.getElementById('opListContent');
+        let allOps = [...onlineOps.map(o => ({...o, status: 'online'}))].concat([...offlineOps].map(o => ({...o, status: 'offline'})).sort((a,b) => a.name.localeCompare(b.name)));
+        cont.innerHTML = allOps.map(op => {
+            const isOnline = op.status === 'online', statusColor = isOnline ? 'var(--green)' : 'var(--red)', btnClass = isOnline ? 'state-on' : 'state-off', textActive = isOnline ? 'Attivo' : 'Offline', textDB = isOnline ? 'DB On' : 'DB Off';
+            return `<div style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid var(--shadow-dark); background: var(--input-bg); margin-bottom: 10px; border-radius: 15px; flex-wrap: wrap; gap: 10px; box-shadow: inset 2px 2px 5px var(--shadow-dark);">
+                <div style="display:flex; align-items:center; gap:10px;"><div class="${isOnline ? 'dot-online' : 'dot-offline'}"></div><span style="font-weight:900; font-size: 14px; color:var(--text); font-family: var(--font-head);">${op.name}</span><span style="color:${statusColor}; font-size:11px; font-weight:700;">(${op.status.toUpperCase()})</span></div>
+                <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                    <button class="nav-btn" style="padding:10px 15px; font-size: 11px;" onclick="openEditModal('${op.name}')">Modifica</button>
+                    <button class="nav-btn ${btnClass}" style="padding:10px 15px; font-size: 11px;" onclick="toggleBtn(this, 'ACTIVE')">${textActive}</button>
+                    <button class="nav-btn ${btnClass}" style="padding:10px 15px; font-size: 11px;" onclick="toggleBtn(this, 'DB')">${textDB}</button>
+                </div></div>`;
+        }).join('');
+    }
+
+    let selectedFiles = [];
+    function validateFiles(input) { 
+        const files = Array.from(input.files); 
+        if (files.length > 10) { alert("Max 10 file."); input.value = ""; return; } 
+        if (files.reduce((a, f) => a + f.size, 0) > 1024*1024*1024) { alert("Max 1GB."); input.value = ""; return; } 
+        selectedFiles = files; 
+        document.getElementById('fileName').innerText = files.length + " file pronti per il caricamento"; 
+    }
+    
+    async function uploadToNAS() { 
+        if(selectedFiles.length === 0) return alert("Seleziona almeno un file!");
+        
+        const case_id = document.getElementById('up-id').value;
+        if(!case_id) return alert("Inserisci un ID Caso!");
+
+        const pBar = document.getElementById('pBar');
+        const status = document.getElementById('status-text');
+        document.getElementById('progCont').style.display = 'block';
+        
+        const operatore = safeStorage.getItem('foxshield_operator_id') || "Admin_Diretto";
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            status.innerText = `Invio file ${i+1}/${selectedFiles.length}: ${selectedFiles[i].name}...`;
+            
+            let fd = new FormData();
+            fd.append("file", selectedFiles[i]);
+            fd.append("case_id", case_id);
+            fd.append("nome", document.getElementById('up-nome').value);
+            fd.append("cognome", document.getElementById('up-cognome').value);
+            fd.append("indirizzo", document.getElementById('up-indirizzo').value);
+            fd.append("telefono", document.getElementById('up-tel').value);
+            fd.append("email", document.getElementById('up-email').value);
+            fd.append("operatore", operatore);
+            fd.append("gps", "Upload_Da_Admin_Panel");
+            fd.append("usa_timestamp", "false"); 
+            
+            try {
+                const response = await fetch("upload.php", { method: "POST", body: fd });
+                if (response.ok) {
+                    pBar.style.width = (((i + 1) / selectedFiles.length) * 100) + "%";
+                } else {
+                    throw new Error("Errore Server");
+                }
+            } catch (e) {
+                alert(`Errore caricamento file: ${selectedFiles[i].name}`);
+            }
+        }
+        
+        status.innerText = "SALVATO CORRETTAMENTE SUL NAS!";
+        setTimeout(() => {
+            closeAllModals();
+            document.getElementById('uploadForm').reset();
+            document.getElementById('fileName').innerText = "Trascina i file o clicca per caricare";
+            selectedFiles = [];
+        }, 1500); 
+    }
+
+    window.onclick = (e) => {
+        if (!e.target.matches('.status-block') && !e.target.closest('.status-block') && !e.target.closest('.op-dropdown')) {
+            document.getElementById('opDropdown').classList.remove('show');
+        }
+    };
+    
+    window.chartTemp = new Chart(document.getElementById('chartTemp'), { type: 'doughnut', data: { datasets: [{ data: [45, 55], backgroundColor: ['#ff3b30', 'transparent'], borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, hover: {mode: null} } });
+    window.chartRam = new Chart(document.getElementById('chartRam'), { type: 'doughnut', data: { datasets: [{ data: [8.4, 7.6], backgroundColor: ['#0071e3', '#34c759'], borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1 }] }, options: { cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, hover: {mode: null} } });
+    window.chartStats = new Chart(document.getElementById('chartStats'), { type: 'bar', data: { labels: ['L','M','M','G','V','S','D'], datasets: [{ data: [45, 60, 40, 85, 55, 90, 70], backgroundColor: '#0071e3', borderRadius: 5, borderSkipped: false }] }, options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { family: "'Orbitron', sans-serif", weight: 'bold' } } } }, animation: false } });
+    
+    setInterval(() => { 
+        let temp = Math.floor(Math.random() * 5) + 42; 
+        document.getElementById('tempVal').innerText = temp + '°C'; 
+        window.chartTemp.data.datasets[0].data = [temp, 100 - temp]; 
+        
+        let used = (Math.random() * 2 + 8).toFixed(1); 
+        let free = (16 - used).toFixed(1); 
+        document.getElementById('ramUsedText').innerText = used + ' GB'; 
+        document.getElementById('ramFreeText').innerText = free + ' GB'; 
+        window.chartRam.data.datasets[0].data = [used, free]; 
+        
+        window.chartTemp.update('none');
+        window.chartRam.update('none'); 
+    }, 3000);
+</script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OverWatch__RecoRdeR // 3D Pro Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@600;900&family=VT323&display=swap');
+        
+        :root { 
+            --radius: 15px; 
+            --border-width: 0px; 
+            --border-type: solid;
+            --font-head: 'Orbitron', sans-serif; 
+            --font-body: 'Inter', sans-serif;
+        }
+
+        [data-theme="apple"] { 
+            --bg-color: #f0f0f3; --text-main: #1d1d1f; --text-secondary: #86868b;
+            --accent-1: #0071e3; --alert: #ff3b30; --hacker-green: #34c759;
+            --shadow-light: #ffffff; --shadow-dark: #aeaec0;
+            --panel-bg: #f0f0f3; --input-bg: #f0f0f3; --btn-bg: #f0f0f3;
+        }
+
+        [data-theme="jean_dark"] {
+            --bg-color: #0f0a05; --text-main: #f39c12; --text-secondary: #8a631c;
+            --accent-1: #f1c40f; --alert: #e74c3c; --hacker-green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.2); --shadow-dark: rgba(0, 0, 0, 0.9);
+            --panel-bg: #0f0a05; --input-bg: #170f08; --btn-bg: #170f08;
+        }
+
+        [data-theme="jean_grey"] {
+            --bg-color: #3b3b3d; --text-main: #f39c12; --text-secondary: #a0a0a5;
+            --accent-1: #f1c40f; --alert: #e74c3c; --hacker-green: #d35400;
+            --shadow-light: rgba(243, 156, 18, 0.25); --shadow-dark: rgba(0, 0, 0, 0.7);
+            --panel-bg: #3b3b3d; --input-bg: #323234; --btn-bg: #323234;
+        }
+
+        [data-theme="ghost"] {
+            --bg-color: #f8f9fa; --text-main: #495057; --text-secondary: #adb5bd;
+            --accent-1: #6c757d; --alert: #d90429; --hacker-green: #2ecc71;
+            --shadow-light: #ffffff; --shadow-dark: #dee2e6;
+            --panel-bg: #f8f9fa; --input-bg: #f8f9fa; --btn-bg: #f8f9fa;
+        }
+
+        [data-theme="silver"] {
+            --bg-color: #e0e5ec; --text-main: #2d3436; --text-secondary: #636e72;
+            --accent-1: #0984e3; --alert: #d63031; --hacker-green: #00b894;
+            --shadow-light: #ffffff; --shadow-dark: #a3b1c6;
+            --panel-bg: #e0e5ec; --input-bg: #e0e5ec; --btn-bg: #e0e5ec;
+        }
+
+        [data-theme="stealth"] {
+            --bg-color: #2c2c2e; --text-main: #f2f2f7; --text-secondary: #aeaeb2;
+            --accent-1: #0a84ff; --alert: #ff453a; --hacker-green: #32d74b;
+            --shadow-light: #3a3a3c; --shadow-dark: #1c1c1e;
+            --panel-bg: #2c2c2e; --input-bg: #2c2c2e; --btn-bg: #2c2c2e;
+        }
+
+        [data-theme="neon"] {
+            --bg-color: #0f0f13; --text-main: #00f2ff; --text-secondary: #747494;
+            --accent-1: #ff00c1; --alert: #ff003c; --hacker-green: #00ffaa;
+            --shadow-light: rgba(0, 242, 255, 0.2); --shadow-dark: rgba(0, 0, 0, 0.8);
+            --panel-bg: #0f0f13; --input-bg: #15151a; --btn-bg: #15151a;
+        }
+
+        body { 
+            background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-body); 
+            margin: 0; min-height: 100vh; display: flex; flex-direction: column; text-transform: uppercase; 
+            position: relative; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: auto; 
+            -webkit-font-smoothing: antialiased; transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        .cyber-bg { display: none; }
+
+        .header { 
+            padding: 20px; background: var(--bg-color); 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; z-index: 10; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.5s;
+        }
+        
+        .case-data { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: var(--panel-bg); z-index: 9; transition: 0.5s;}
+        .full-width { grid-column: span 2; }
+        
+        input, textarea { 
+            background: var(--input-bg); border: none; color: var(--text-main); 
+            padding: 16px; width: 100%; font-family: 'Inter', sans-serif; font-weight: 700; 
+            box-sizing: border-box; font-size: 0.85rem; border-radius: var(--radius); 
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); 
+            outline: none; transition: 0.5s;
+        }
+        input:focus, textarea:focus { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); }
+
+        .btn-logo-ghost { 
+            display: flex; flex-direction: row; align-items: center; justify-content: center; 
+            background: var(--btn-bg); border: none; border-radius: var(--radius); 
+            cursor: pointer; padding: 12px; transition: 0.5s; gap: 15px; 
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+        .btn-logo-ghost:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+        .fox-logo-img { max-width: 40px; height: auto; object-fit: contain; border-radius: 8px;}
+        .ghost-label { font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; color: var(--text-secondary); letter-spacing: 1px; }
+
+        .system-tabs-container { background: var(--bg-color); padding: 5px 20px; z-index: 8; border: none; transition: 0.5s;}
+        .system-tabs { display: flex; gap: 15px; }
+        .tab { 
+            flex: 1; padding: 14px; text-align: center; cursor: pointer; 
+            font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; 
+            border-radius: 12px; background: var(--btn-bg); color: var(--text-secondary); 
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); transition: 0.5s; border: none;
+        }
+        .tab.active { background: var(--btn-bg); color: var(--accent-1); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); }
+        
+        [data-theme="neon"] .tab.active, [data-theme="jean_dark"] .tab.active, [data-theme="jean_grey"] .tab.active { 
+            animation: neon-pulse-glow 1.5s infinite alternate; color: var(--accent-1); 
+        }
+
+        .status-terminal-bar { 
+            margin-top: 15px; padding: 12px 15px; border-radius: 12px; 
+            background: var(--input-bg); font-family: monospace; font-size: 0.75rem; font-weight: 700; 
+            color: var(--text-main); overflow: hidden; display: flex; align-items: center; height: 20px; 
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); border: none; transition: 0.5s;
+        }
+        #ticker-text { width: 100%; white-space: nowrap; }
+        .ticker-animation { animation: ticker 12s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .viewport { 
+            flex-grow: 1; min-height: 250px; margin: 15px 20px; border-radius: 20px; 
+            background: #000; position: relative; display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light); border: none;
+            transition: 0.5s;
+        }
+        #logo-loop-video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; z-index: 5; transition: opacity 0.5s ease; border-radius: 20px; }
+        #main-eq-canvas { width: 100%; height: 100%; position: absolute; z-index: 10; display: none; }
+        #playback-video { width: 100%; height: 100%; display: none; object-fit: contain; z-index: 20; border-radius: 20px; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px 20px 30px; background: var(--panel-bg); z-index: 7; transition: 0.5s;}
+        .btn { 
+            background: var(--btn-bg); border: none; border-radius: 15px; color: var(--text-main); 
+            padding: 18px 5px; font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; 
+            cursor: pointer; transition: 0.5s; 
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+        .btn:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); transform: scale(0.98); }
+        .btn-active { color: var(--accent-1); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); }
+        .btn-fox { grid-column: span 2; color: var(--hacker-green); font-size: 1rem; }
+        
+        .btn-red-pulse { color: var(--alert); animation: pulse-red-alert 2s infinite; }
+        @keyframes pulse-red-alert { 50% { box-shadow: 0 0 15px rgba(255, 59, 48, 0.4), inset 2px 2px 5px var(--shadow-dark); } }
+
+        [data-theme="neon"] .btn-active, [data-theme="jean_dark"] .btn-active, [data-theme="jean_grey"] .btn-active { 
+            animation: neon-pulse-glow 1.5s infinite alternate; color: var(--accent-1); 
+        }
+        @keyframes neon-pulse-glow {
+            0% { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light), 0 0 5px var(--accent-1); }
+            100% { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light), 0 0 15px var(--accent-1), 0 0 25px var(--accent-1); }
+        }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .player-container { 
+            width: 90%; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 100; 
+            background: var(--bg-color); padding: 20px; border-radius: 20px; 
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); 
+            margin-bottom: 20px; border: none; transition: 0.5s;
+        }
+        
+        input[type=range] { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); padding: 0; height: 10px; border-radius: 5px; appearance: none; background: var(--input-bg); }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-1); cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+
+        .circle-btn { 
+            width: 55px; height: 55px; border-radius: 50%; border: none; color: var(--text-main); background: var(--btn-bg); 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: var(--font-head); font-size: 0.8rem;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); transition: 0.3s;
+        }
+        .circle-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: scale(0.95);}
+        
+        .pallina-rossa { display: inline-block; width: 12px; height: 12px; background: var(--alert); border-radius: 50%; margin-right: 8px; animation: pulse-red 0.8s infinite; box-shadow: 0 0 8px var(--alert);}
+        @keyframes pulse-red { 50% { opacity: 0.3; } }
+        .flash-msg { color: var(--accent-1); font-weight: 900; }
+        
+        #modal-relazione > div {
+            background: var(--bg-color); padding: 30px; border-radius: 30px; width: 85%; max-width: 400px;
+            box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light); text-align: center; border: none; transition: 0.5s;
+        }
+
+        .eq-btn-overlay {
+            display: block; position: absolute; bottom: 15px; right: 15px; z-index: 30; 
+            background: var(--btn-bg); border: none; border-radius: 12px; 
+            color: var(--text-main); padding: 10px 15px; font-size: 0.75rem; font-weight: 900;
+            cursor: pointer; font-family: var(--font-head);
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); transition: 0.3s;
+        }
+        .eq-btn-overlay:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+    </style>
+</head>
+<body data-theme="apple">
+
+    <div class="cyber-bg"></div>
+
+    <div class="header">
+        <div>
+            <span onclick="window.location.href='index.html'" style="cursor: pointer; color: var(--alert); font-weight: 900; margin-right: 15px; text-shadow: 0 0 5px rgba(255, 59, 48, 0.3);">[ &lt; HOME ]</span>
+            <span id="system-status" style="transition: 0.3s;">SYSTEM: OVERWATCH</span>
+        </div>
+        <div>
+            <span id="gps-info" style="margin-right: 15px; color: var(--alert); text-shadow: 0 0 5px rgba(255, 59, 48, 0.3); transition: 0.3s;">GPS: ACQUISIZIONE...</span>
+            <span id="theme-toggle" onclick="toggleTheme()" style="cursor: pointer; color: var(--accent-1);">[ STILE ]</span>
+        </div>
+    </div>
+    
+    <div class="case-data">
+        <input type="text" id="case_id" placeholder="ID CASO" class="full-width">
+        <input type="text" id="nome" placeholder="NOME">
+        <input type="text" id="cognome" placeholder="COGNOME">
+        <input type="text" id="indirizzo" placeholder="INDIRIZZO" class="full-width">
+        <input type="text" id="telefono" placeholder="TELEFONO">
+        <input type="email" id="email" placeholder="EMAIL">
+        
+        <div class="btn-logo-ghost full-width" onclick="toggleGhostMode()">
+            <img src="foxshield-logo2.jpg" alt="Logo" class="fox-logo-img" onerror="this.style.display='none'">
+            <span id="ghost-label-text" class="ghost-label">[ GHOST MODE: OFF ]</span>
+        </div>
+    </div>
+
+    <div class="system-tabs-container">
+        <div class="system-tabs">
+            <div class="tab active" id="tab-audio" onclick="switchTab('audio')">AUDIO</div>
+            <div class="tab" id="tab-video" onclick="switchTab('video')">VIDEO</div>
+        </div>
+        <div class="status-terminal-bar">
+            <div id="ticker-text" class="ticker-animation">SISTEMA OPERATIVO ATTIVO... DATABASE FOXSHIELD PRONTO...</div>
+        </div>
+    </div>
+    
+    <div id="section-audio" style="display: flex; flex-direction: column; flex-grow: 1;">
+        <div class="viewport" id="viewport-main">
+            <video id="logo-loop-video" autoplay loop muted playsinline oncontextmenu="return false;">
+                <source src="intrologo.mp4" type="video/mp4">
+            </video>
+            <canvas id="main-eq-canvas"></canvas>
+            
+            <div id="eq-toggle-ui" class="eq-btn-overlay" onclick="toggleEqStyle()">[ STILE EQ: 1 ]</div>
+        </div>
+        <div class="controls">
+            <button class="btn" id="btn-audio-rec">REGISTRA AUDIO</button>
+            <button class="btn" id="btn-audio-prev">DECK ANALISI</button>
+        </div>
+    </div>
+
+    <div id="section-video" style="display: none; flex-direction: column; flex-grow: 1;">
+        <div class="viewport" id="viewport-video">
+            <video id="playback-video" controls playsinline preload="metadata"></video>
+        </div>
+        <div class="controls">
+            <button class="btn btn-active" onclick="document.getElementById('capture-video').click()">AVVIA VIDEOCAMERA</button>
+            <button class="btn" id="btn-video-play">PLAY ANTEPRIMA</button>
+        </div>
+        <input type="file" id="capture-video" accept="video/*" capture="environment" style="display:none;">
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="btn-ts-toggle">TIMESTAMP PIXEL: OFF</button>
+        <button class="btn" onclick="document.getElementById('modal-relazione').style.display='flex'">RELAZIONE</button>
+        <button class="btn btn-fox" id="btn-send-fox">INVIA AL DATABASE</button>
+        <button class="btn btn-red-pulse" style="grid-column: span 2;" onclick="window.location.href='database.html'">>>> APRI DATABASE TATTICO <<<</button>
+    </div>
+
+    <div id="audio-deck-popup" class="modal">
+        <div class="header" style="width:100%; box-sizing: border-box; background: transparent; box-shadow: none;"><span>AUDIO ANALYSIS</span></div>
+        <div class="viewport" style="flex-direction: column; position: relative; width: 90%;">
+            <canvas id="deck-eq-canvas" style="flex-grow: 1; width:100%;"></canvas>
+            <div id="deck-eq-toggle-ui" class="eq-btn-overlay" style="display:block; top: 10px; bottom: auto;" onclick="toggleEqStyle()">[ STILE EQ: 1 ]</div>
+            <div class="player-container" style="margin-top: auto;">
+                <input type="range" id="audio-seekbar" value="0" step="0.1" style="width:90%">
+                <div style="display:flex; gap:15px; margin-top:10px;">
+                    <button class="circle-btn" onclick="seekAudio(-2)">-2S</button>
+                    <button class="circle-btn" id="deck-play-pause" style="color: var(--accent-1) !important;">PLAY</button>
+                    <button class="circle-btn" onclick="seekAudio(2)">+2S</button>
+                </div>
+            </div>
+        </div>
+        <div class="controls" style="width: 100%; box-sizing: border-box; background: transparent;"><button class="btn full" id="btn-close-deck" style="grid-column: span 2; color: var(--alert) !important;">CHIUDI DECK</button></div>
+        <audio id="playback-audio" style="display:none;"></audio>
+    </div>
+
+    <div id="modal-relazione" class="modal">
+        <div>
+            <textarea id="rel_text" style="width:100%; height:150px; outline:none;" placeholder="INSERISCI TESTO RELAZIONE QUI..."></textarea>
+            <button class="btn full" onclick="document.getElementById('modal-relazione').style.display='none'" style="width:100%; margin-top:20px;">CONFERMA RELAZIONE</button>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder, recordedChunks = [], lastBlob = null, lastType = null;
+        let useTimestamp = false, currentGps = "N/A";
+        let audioCtx, mainAnalyser, deckAnalyser, dataArray, animationId, persistentStream = null;
+        
+        let eqColorMain = '#00f2ff', eqColorAccent = '#ff00c1', eqColorGreen = '#39ff14', currentEqStyle = 0; 
+
+        const ticker = document.getElementById('ticker-text');
+        const logoVideo = document.getElementById('logo-loop-video');
+        const mainCanvas = document.getElementById('main-eq-canvas');
+        const mainCtx = mainCanvas.getContext('2d');
+        const deckCanvas = document.getElementById('deck-eq-canvas');
+        const deckCtx = deckCanvas.getContext('2d');
+        const audioPlayer = document.getElementById('playback-audio');
+        const seekbar = document.getElementById('audio-seekbar');
+
+        function updateCanvasColors() {
+            const styles = getComputedStyle(document.body);
+            eqColorMain = styles.getPropertyValue('--text-main').trim() || '#00f2ff';
+            eqColorAccent = styles.getPropertyValue('--accent-1').trim() || '#ff00c1';
+            eqColorGreen = styles.getPropertyValue('--hacker-green').trim() || '#39ff14';
+        }
+
+        // --- GESTIONE STATO RETE ONLINE/OFFLINE ---
+        function updateNetworkStatus() {
+            const sysStatusEl = document.getElementById('system-status');
+            if (navigator.onLine) {
+                sysStatusEl.style.color = "var(--hacker-green)";
+                sysStatusEl.style.textShadow = "0 0 5px var(--hacker-green)";
+            } else {
+                sysStatusEl.style.color = "var(--alert)";
+                sysStatusEl.style.textShadow = "0 0 5px var(--alert)";
+            }
+        }
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // --- RICHIESTA PREVENTIVA DEI PERMESSI PER EVITARE POP-UP RIPETUTI ---
+        async function requestPermissionsOnLoad() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                stream.getTracks().forEach(track => track.stop()); // Spegniamo subito i device dopo aver registrato il consenso
+                sendConsoleFlash("PERMESSI HARDWARE ACQUISITI CON SUCCESSO.");
+            } catch(e) {
+                console.warn("L'utente ha negato i permessi all'avvio.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCanvasColors(); 
+            updateNetworkStatus(); // Inizializza il colore del System Overwatch
+            
+            const inputs = ['case_id', 'nome', 'cognome', 'indirizzo', 'telefono', 'email', 'rel_text'];
+            inputs.forEach(id => {
+                let el = document.getElementById(id);
+                if(sessionStorage.getItem(id)) el.value = sessionStorage.getItem(id);
+                el.addEventListener('input', () => sessionStorage.setItem(id, el.value));
+            });
+
+            silentInit(); 
+            requestPermissionsOnLoad();
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                if (logoVideo && !logoVideo.paused) logoVideo.pause();
+            } else {
+                if (logoVideo && logoVideo.paused && logoVideo.style.display !== 'none') {
+                    logoVideo.play().catch(e => console.log("Auto-play blocked"));
+                }
+            }
+        });
+
+        function sendConsoleFlash(message, isPersistent = false) {
+            ticker.classList.remove('ticker-animation');
+            ticker.innerHTML = `<span class="flash-msg">>> ${message} <<</span>`;
+            if (!isPersistent) {
+                setTimeout(() => {
+                    ticker.classList.add('ticker-animation');
+                    ticker.innerHTML = "SISTEMA OPERATIVO ATTIVO... DATABASE FOXSHIELD PRONTO...";
+                }, 5000);
+            }
+        }
+
+        // --- GESTIONE GPS (CON COLORI ROSSO/VERDE) ---
+        function silentInit() {
+            const gpsEl = document.getElementById('gps-info');
+            navigator.geolocation.watchPosition((p) => {
+                currentGps = `${p.coords.latitude.toFixed(5)}, ${p.coords.longitude.toFixed(5)}`;
+                gpsEl.innerText = `GPS: ${currentGps}`;
+                gpsEl.style.color = "var(--hacker-green)";
+                gpsEl.style.textShadow = "0 0 5px var(--hacker-green)";
+            }, () => { 
+                console.warn("GPS negato o in attesa.");
+                gpsEl.innerText = `GPS: OFFLINE`;
+                gpsEl.style.color = "var(--alert)";
+                gpsEl.style.textShadow = "0 0 5px var(--alert)";
+            });
+            
+            if (logoVideo.paused) logoVideo.play().catch(e => console.log("Auto-play blocked"));
+            sendConsoleFlash("TERMINALE PRONTO ALL'USO");
+        }
+
+        let isGhostMode = false;
+        function toggleGhostMode() {
+            isGhostMode = !isGhostMode;
+            document.body.style.opacity = isGhostMode ? "0.3" : "1";
+            document.getElementById('ghost-label-text').innerText = isGhostMode ? "[ GHOST: ACTIVE ]" : "[ GHOST: OFF ]";
+            document.getElementById('ghost-label-text').style.color = isGhostMode ? "var(--alert)" : "var(--text-main)";
+        }
+
+        function toggleTheme() {
+            const themes = ['apple', 'jean_dark', 'jean_grey', 'ghost', 'silver', 'stealth', 'neon'];
+            let current = document.body.getAttribute('data-theme') || 'apple';
+            let next = themes[(themes.indexOf(current) + 1) % themes.length];
+            document.body.setAttribute('data-theme', next);
+            updateCanvasColors(); 
+            sendConsoleFlash("STILE GRAFICO: " + next.toUpperCase());
+        }
+
+        function toggleEqStyle() {
+            currentEqStyle = (currentEqStyle + 1) % 5;
+            document.getElementById('eq-toggle-ui').innerText = `[ STILE EQ: ${currentEqStyle + 1} ]`;
+            document.getElementById('deck-eq-toggle-ui').innerText = `[ STILE EQ: ${currentEqStyle + 1} ]`;
+        }
+
+        function switchTab(type) {
+            document.getElementById('tab-audio').classList.toggle('active', type === 'audio');
+            document.getElementById('tab-video').classList.toggle('active', type === 'video');
+            document.getElementById('section-audio').style.display = type === 'audio' ? 'flex' : 'none';
+            document.getElementById('section-video').style.display = type === 'video' ? 'flex' : 'none';
+
+            if (type === 'video') {
+                document.getElementById('viewport-video').prepend(logoVideo);
+                if (lastType === 'video' && lastBlob) {
+                    logoVideo.style.display = 'none';
+                } else {
+                    logoVideo.style.display = 'block';
+                    if (logoVideo.paused) logoVideo.play().catch(e=>e);
+                }
+            } else {
+                document.getElementById('viewport-main').prepend(logoVideo);
+                logoVideo.style.display = 'block';
+                if (logoVideo.paused) logoVideo.play().catch(e=>e);
+            }
+        }
+
+        function draw(targetCanvas, targetCtx, analyser) {
+            animationId = requestAnimationFrame(() => draw(targetCanvas, targetCtx, analyser));
+            if (currentEqStyle === 2) analyser.getByteTimeDomainData(dataArray); 
+            else analyser.getByteFrequencyData(dataArray); 
+            
+            targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+            let w = targetCanvas.width = targetCanvas.clientWidth, h = targetCanvas.height = targetCanvas.clientHeight;
+            
+            if (currentEqStyle === 0) {
+                let radius = Math.min(w,h)*0.25, cx = w/2, cy = h/2;
+                for(let i=0; i<80; i++) {
+                    let bh = (dataArray[i]/255)*(h*0.3), rad = (i*Math.PI*2)/80;
+                    targetCtx.beginPath(); targetCtx.moveTo(cx+Math.cos(rad)*radius, cy+Math.sin(rad)*radius);
+                    targetCtx.lineTo(cx+Math.cos(rad)*(radius+bh), cy+Math.sin(rad)*(radius+bh));
+                    targetCtx.strokeStyle = `hsl(${(i/80)*360}, 100%, 50%)`; targetCtx.lineWidth=3; targetCtx.stroke();
+                }
+            } else if (currentEqStyle === 1) {
+                let barWidth = (w / 80) - 1;
+                for(let i=0; i<80; i++) {
+                    let bh = (dataArray[i]/255) * h;
+                    targetCtx.fillStyle = `hsl(${(i/80)*360}, 100%, 50%)`;
+                    targetCtx.fillRect(i * (barWidth + 1), h - bh, barWidth, bh);
+                }
+            } else if (currentEqStyle === 2) {
+                targetCtx.lineWidth = 3; targetCtx.strokeStyle = eqColorMain; targetCtx.beginPath();
+                let sliceWidth = w * 1.0 / 80; let x = 0;
+                for(let i = 0; i < 80; i++) {
+                    let v = dataArray[i] / 128.0; let y = v * h / 2;
+                    if(i === 0) targetCtx.moveTo(x, y); else targetCtx.lineTo(x, y);
+                    x += sliceWidth;
+                }
+                targetCtx.lineTo(w, h/2); targetCtx.stroke();
+            } else if (currentEqStyle === 3) {
+                let bw = (w / 80) - 1;
+                for(let i=0; i<80; i++) {
+                    let bh = (dataArray[i]/255) * (h/2);
+                    targetCtx.fillStyle = `hsl(180, 100%, ${50 + (dataArray[i]/5)}%)`; 
+                    targetCtx.fillRect(i * (bw + 1), h/2 - bh, bw, bh*2);
+                }
+            } else if (currentEqStyle === 4) {
+                let dotSpacing = w / 80;
+                for(let i=0; i<80; i++) {
+                    let bh = (dataArray[i]/255) * h;
+                    targetCtx.beginPath(); targetCtx.arc(i * dotSpacing, h - bh - 5, 3, 0, 2*Math.PI);
+                    targetCtx.fillStyle = eqColorAccent; targetCtx.fill();
+                    targetCtx.fillStyle = eqColorGreen; targetCtx.fillRect(i * dotSpacing - 1, h - 3, 2, 3);
+                }
+            }
+        }
+
+        document.getElementById('btn-audio-rec').onclick = async function() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                this.innerText = "REGISTRA AUDIO";
+                if (persistentStream) {
+                    persistentStream.getTracks().forEach(track => track.stop());
+                    persistentStream = null;
+                }
+                return;
+            }
+
+            try { 
+                persistentStream = await navigator.mediaDevices.getUserMedia({ audio: true }); 
+            } catch(e) { 
+                return alert("Devi consentire l'accesso al microfono nel pop-up del browser per registrare."); 
+            }
+
+            recordedChunks = []; 
+            mediaRecorder = new MediaRecorder(persistentStream);
+            logoVideo.style.opacity = "0"; 
+            mainCanvas.style.display = 'block';
+            document.getElementById('eq-toggle-ui').style.display = 'block';
+            
+            mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                lastBlob = new Blob(recordedChunks, { type: 'audio/webm' }); lastType = 'audio';
+                mainCanvas.style.display = 'none'; 
+                logoVideo.style.opacity = "1";
+                document.getElementById('eq-toggle-ui').style.display = 'none';
+                cancelAnimationFrame(animationId);
+                sendConsoleFlash("AUDIO ACQUISITO IN MEMORIA");
+            };
+            
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            mainAnalyser = audioCtx.createAnalyser(); 
+            audioCtx.createMediaStreamSource(persistentStream).connect(mainAnalyser);
+            mainAnalyser.fftSize = 256;
+            dataArray = new Uint8Array(mainAnalyser.frequencyBinCount);
+            draw(mainCanvas, mainCtx, mainAnalyser);
+            
+            mediaRecorder.start(); this.innerHTML = '<span class="pallina-rossa"></span> STOP';
+            sendConsoleFlash("REGISTRAZIONE AUDIO ATTIVA...");
+        };
+
+        document.getElementById('btn-audio-prev').onclick = function() {
+            if(lastType !== 'audio') return alert("Nessun audio in memoria!");
+            audioPlayer.src = URL.createObjectURL(lastBlob);
+            document.getElementById('audio-deck-popup').style.display = 'flex';
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            deckAnalyser = audioCtx.createAnalyser();
+            audioCtx.createMediaElementSource(audioPlayer).connect(deckAnalyser);
+            deckAnalyser.connect(audioCtx.destination);
+            dataArray = new Uint8Array(deckAnalyser.frequencyBinCount);
+            audioPlayer.onloadedmetadata = () => { seekbar.max = audioPlayer.duration; };
+            audioPlayer.play(); draw(deckCanvas, deckCtx, deckAnalyser);
+        };
+
+        function seekAudio(sec) { audioPlayer.currentTime += sec; }
+        document.getElementById('deck-play-pause').onclick = () => audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause();
+        document.getElementById('btn-close-deck').onclick = () => { audioPlayer.pause(); document.getElementById('audio-deck-popup').style.display = 'none'; };
+        
+        document.getElementById('capture-video').onchange = function(e) {
+            const file = e.target.files[0];
+            if(file) { 
+                lastBlob = file; 
+                lastType = 'video'; 
+                const v = document.getElementById('playback-video'); 
+                
+                logoVideo.pause();
+                logoVideo.style.display = 'none';
+                
+                if (v.src) { URL.revokeObjectURL(v.src); }
+                
+                v.style.display = 'block'; 
+                v.src = URL.createObjectURL(file);
+                sendConsoleFlash("VIDEO ACQUISITO IN MEMORIA");
+            }
+        };
+
+        document.getElementById('btn-video-play').onclick = () => document.getElementById('playback-video').play();
+
+        document.getElementById('btn-ts-toggle').onclick = function() {
+            useTimestamp = !useTimestamp;
+            this.innerText = `TIMESTAMP PIXEL: ${useTimestamp ? 'ON' : 'OFF'}`;
+            this.classList.toggle('btn-active');
+        };
+
+        document.getElementById('btn-send-fox').onclick = async function() {
+            if(!lastBlob) return alert("Nessun dato acquisito da inviare!");
+            
+            let fd = new FormData();
+            fd.append("file", lastBlob);
+            fd.append("case_id", document.getElementById('case_id').value);
+            fd.append("nome", document.getElementById('nome').value);
+            fd.append("cognome", document.getElementById('cognome').value);
+            fd.append("indirizzo", document.getElementById('indirizzo').value);
+            fd.append("telefono", document.getElementById('telefono').value);
+            fd.append("email", document.getElementById('email').value);
+            fd.append("relazione", document.getElementById('rel_text').value);
+            fd.append("gps", currentGps);
+            fd.append("usa_timestamp", useTimestamp);
+            
+            let operatore = localStorage.getItem('foxshield_operator_id') || "Jean@live.it";
+            fd.append("operatore", operatore);
+
+            this.innerText = "SENDING...";
+            sendConsoleFlash("TRASMISSIONE AL VAULT IN CORSO...");
+
+            try { 
+                const response = await fetch("upload.php", { method: "POST", body: fd }); 
+                if (response.ok) {
+                    this.innerText = "UPLOAD OK"; 
+                    sendConsoleFlash("DATI SALVATI. PULIZIA MEMORIA IN CORSO...", true);
+                    
+                    setTimeout(() => {
+                        const v = document.getElementById('playback-video');
+                        
+                        if (v.src) { URL.revokeObjectURL(v.src); v.removeAttribute('src'); v.load(); }
+                        v.style.display = 'none';
+
+                        logoVideo.style.display = 'block';
+                        logoVideo.play().catch(e=>e);
+
+                        if (audioPlayer.src) { URL.revokeObjectURL(audioPlayer.src); }
+                        audioPlayer.src = '';
+                        recordedChunks = [];
+
+                        document.getElementById('capture-video').value = '';
+                        lastBlob = null;
+                        lastType = null;
+
+                        document.getElementById('rel_text').value = '';
+                        sessionStorage.removeItem('rel_text');
+
+                        document.getElementById('btn-send-fox').innerText = "INVIA AL DATABASE";
+                        sendConsoleFlash("MEMORIA LIBERATA. PRONTO PER NUOVA ACQUISIZIONE.");
+                        
+                    }, 2000); 
+
+                } else { throw new Error("Server error"); }
+            } catch (e) { 
+                alert("Errore Database!"); this.innerText = "ERROR"; 
+            }
+        };
+    </script>
+</body>
+</html>

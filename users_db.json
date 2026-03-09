@@ -1,0 +1,29 @@
+{
+    "users": [
+        {
+            "username": "ADMIN_FOX",
+            "password": "123",
+            "operatore": "Jean@live.it"
+        },
+        {
+            "username": "Yyy",
+            "password": "7777",
+            "operatore": "fgk@hot.com"
+        },
+        {
+            "username": "asdfg",
+            "password": "sdfgvb",
+            "operatore": "sdfgb"
+        },
+        {
+            "username": "ushwhw",
+            "password": "hwhwhw",
+            "operatore": "h2hehe@je.it"
+        },
+        {
+            "username": "Yyyy",
+            "password": "1111",
+            "operatore": "hogh"
+        }
+    ]
+}
